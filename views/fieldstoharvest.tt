@@ -1,0 +1,105 @@
+<% INCLUDE incl/header.tt %>
+
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Fields to harvest</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Fields to harvest
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                        <thead>
+                            <tr>
+                                <th>LOT</th>
+                                <th>Start Harv.Date</th>
+                                <th>End Harv.Date</th>
+                                <th>HOM Harv.Date</th>
+                                <th>Area</th>
+                                <th>Hybrid</th>
+                                <th>ABC</th>
+                                <th>Lat</th>
+                                <th>Lon</th>
+                                <th>Region</th>
+                                <th>Yield (Ton)</th>
+                                <th>Picker</th>
+                                <th>Dry down rate</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% FOREACH req IN reqs %>
+                            <tr class="odd gradeX">
+                                <td><% req.edit %></td>
+                                <td><% req.twstart %></td>
+                                <td><% req.twend %></td>
+                                <td><% req.harv_date %></td>
+                                <td><% req.area %></td>
+                                <td><% req.hybrid %></td>
+                                <td><% req.abc %></td>
+                                <td><% req.latitude %></td>
+                                <td><% req.longitude %></td>
+                                <td><% req.region %></td>
+                                <td><% req.kg %></td>
+                                <td><% req.cluster %></td>
+                                <td><% req.drydown_rate %></td>
+                            </tr>
+                            <% END %>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div id="map"></div> 
+        </div>
+    </div>
+    
+</div>
+<!-- /#page-wrapper -->
+
+
+<% INCLUDE incl/footer.tt %>
+<script>
+
+    $(document).ready(function() {
+
+        var user_id = getCookie('user_id');
+        $("#user_id").html(user_id);
+        
+        $('#dataTables-example').DataTable({
+            responsive: true
+        });
+    });
+
+    function initMap() {
+        const uluru = { lat: <% site_lat %>, lng: <% site_lon %> };
+        const map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 6,
+          center: uluru,
+        });
+        <% map %>
+    }
+
+    
+
+
+</script>
+<!-- End of file -->
+</body>
+</html>
+

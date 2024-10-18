@@ -1,0 +1,1022 @@
+<% INCLUDE incl/header.tt %>
+
+
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Field Manager</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            
+            <div class="row">
+
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Fields
+                            
+                        </div>
+                        <div>
+                            <select id="filter-field">
+                                <option></option>
+                                <option value="region">Region</option>
+                                <option value="seed_plant">Seed Plant</option>
+                                <option value="tracking_number">Tracking Number</option>
+                                <option value="hybrid">Hybrid</option>
+                                <option value="picker_group">Picker Group</option>
+                                <option value="female">Female</option>
+                                <option value="male">Male</option>
+                                <option value="grower">Grower</option>
+                                <option value="active_ha">Area</option>
+                                <option value="yield_ton_ha">Yield (ton/ha)</option>
+                                <option value="trucks">Trucks</option>
+                                <option value="harvest_date">Est.Harv.Date</option>
+                                <option value="harvest_window_start">harvest_window_start</option>
+                                <option value="harvest_window_end">harvest_window_end</option>
+                                <option value="hom_harv_date">HOM.Harv.Date</option>
+                                <option value="hom_moisture">HOM.Moisture</option>
+                                <option value="dh_qualifyed">DH Qualifyed</option>
+                                <option value="suspect">Suspect</option>
+                                <option value="suspect_comments">Suspect Comments</option>
+                                <option value="husking_difficulty">Husking Difficulty</option>
+                                <option value="mst">P90</option>
+                                <option value="mst_date">mst_date</option>
+                                <option value="actual_harvest_date">Actual Harv.Date</option>
+                                <option value="actual_harvest_moisture">Actual Harv.Moisture</option>
+                            </select>
+
+                            <select id="filter-type">
+                                <option value="=">=</option>
+                                <option value="<"><</option>
+                                <option value="<="><=</option>
+                                <option value=">">></option>
+                                <option value=">=">>=</option>
+                                <option value="!=">!=</option>
+                                <option value="like">like</option>
+                            </select>
+
+                            <input id="filter-value" type="text" placeholder="value to filter">
+
+                            <button id="filter-clear">Clear Filter</button>
+                            <button id="download-all-fields-xlsx">Download XLSX</button>
+                            <div id="moisture_wait"></div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="all-fields-table"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+
+            <div class="row">
+
+                <div class="col-lg-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Moisture projection
+                        </div>
+                        <div><button id="download-moisture-projection-xlsx">Download XLSX</button></div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="tbl-moisture-projection"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-4 -->
+
+                <div class="col-lg-3">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Moisture Inspections (Source: Scout) - Click in one row below to see the samples <span id="actual_ddr"></span>,
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="tbl-moisture-inspections"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-4 -->
+
+                <div class="col-lg-5">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Moisture Samples
+                        </div>
+                        <div><button id="download-moisture-samples-xlsx">Download XLSX</button></div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="tbl-moisture-samples"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-4 -->
+
+            </div>
+            <!-- /.row -->
+
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Edit field attributes
+                        </div>
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <form id="form_part1" role="form">
+                                        <div class="form-group">
+                                            <label class="control-label" for="date">Field</label>
+                                            <input class="form-control" type="text" name="form_field" id="form_field" disabled>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label" for="date">Grower</label>
+                                            <input class="form-control" type="text" name="form_grower" id="form_grower" disabled>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label" for="date">Hybrid</label>
+                                            <input class="form-control" type="text" name="form_hybrid" id="form_hybrid" disabled>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Picker Group</label>
+                                            <select id="form_picker_group" class="form-control">
+                                                <option value="select">Select</option>
+                                                <option value="GR1">GR1</option>
+                                                <option value="GR2">GR2</option>
+                                                <option value="GR3">GR3</option>
+                                                <option value="GR4">GR4</option>
+                                                <option value="GR5">GR5</option>
+                                                <option value="GR6">GR6</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>DH Qualified</label>
+                                            <select id="form_dh_qualified" class="form-control">
+                                                <option value="select">Select</option>
+                                                <option value="YES">YES</option>
+                                                <option value="NO">NO</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label" for="date">Area</label>
+                                            <input class="form-control" type="text" name="form_area" id="form_area" >
+                                            </table>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label" for="date">Yield (ton/ha)</label>
+                                            <input class="form-control" type="text" name="form_yield_ton_ha" id="form_yield_ton_ha" >
+                                            </table>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Seed Plant</label>
+                                            <select id="form_seed_plant" class="form-control">
+                                                <option value="select">Select</option>
+                                                <% FOREACH plant IN plants %>
+                                                    <option value="<% plant %>"><% plant %></option>
+                                                <% END %>
+                                            </select>
+                                        </div>
+                                        
+                                    </form>
+                                </div>
+                                <div class="col-lg-6">
+                                    <form id="form_part2" role="form">
+                                        <div class="form-group has-success"> <!-- Date input -->
+                                            <label class="control-label" for="date">harvest_window_start</label>
+                                            <input class="form-control" value='2022-06-01' id="form_harvest_window_start" name="form_harvest_window_start" placeholder="YYYY-MM-DD" type="text"  onfocusout="setHarvestWindowStart()"/>
+                                        </div>
+                                        <div class="form-group has-success"> <!-- Date input -->
+                                            <label class="control-label" for="date">harvest_window_end</label>
+                                            <input class="form-control" value='2022-06-01' id="form_harvest_window_end" name="form_harvest_window_end" placeholder="YYYY-MM-DD" type="text" onfocusout="setHarvestWindowEnd()"/>
+                                        </div>
+                                        
+                                        <div class="form-group has-success"> <!-- Date input -->
+                                            <label class="control-label" for="date">Est.Harv.Date</label>
+                                            <input class="form-control" value='2022-06-01' id="form_harvest_date" name="form_harvest_date" placeholder="YYYY-MM-DD" type="text" onfocusout="setHarvestDate()"/>
+                                        </div>
+                                        <div class="form-group has-success"> <!-- Date input -->
+                                            <label class="control-label" for="date">HOM.Harv.Date</label>
+                                            <input class="form-control" value='2022-06-01' id="form_hom_harv_date" name="form_hom_harv_date" placeholder="YYYY-MM-DD" type="text" disabled />
+                                        </div>
+                                        <div class="form-group has-success"> <!-- Date input -->
+                                            <label class="control-label">HOM.Moisture</label>
+                                            <input class="form-control" type="text" name="form_hom_moisture" id="form_hom_moisture" disabled >
+                                        </div>
+
+                                        <div class="form-group has-success"> <!-- Date input -->
+                                            <label class="control-label" for="date">Actual.Harv.Date</label>
+                                            <table>
+                                            <tr>
+                                                <td>
+                                                    <input class="form-control" value='2022-06-01' id="form_actual_harvest_date" name="form_actual_harvest_date" placeholder="YYYY-MM-DD" type="text"/>
+                                                </td>
+                                                <td>
+                                                    <input type="button" class="btn btn-default" id="btn_clear_actual_harv_date" value="Clear">
+                                                </td>
+                                            </tr>
+                                            </table>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <label>Reason for different harvest dates</label>
+                                            <select id="form_hom_reason" class="form-control">
+                                                <option value="select" selected>Select</option>
+                                                <option value="rain">Rain in the fields</option>
+                                                <option value="weather_problem">Other weather problem</option>
+                                                <option value="biological_damages">Biological damages</option>
+                                                <option value="moisture">Wrong moisture value</option>
+                                                <option value="trucks">Lack of trucks</option>
+                                                <option value="picker">Picker in a different region / zone</option>
+                                                <option value="priority">Wrong priority</option>
+                                            </select>
+                                        </div>
+
+
+                                        <input type="button" class="btn btn-default" id="btn_save_changes" value="Save Changes">
+
+                                    </form>
+                                    <div id="espere"></div>
+                                </div>
+                            <!-- /.row -->
+                            </div>
+                        <!-- /.panel-body -->
+                        </div>
+                    <!-- /.panel panel-default -->
+                    </div>
+                <!-- /.col-lg-12 -->
+                </div>
+            <!-- /.row -->
+            </div>
+
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Weather Forecast - Source: <a href="https://www.ibm.com/weather">IBM The Weather Company (TWC)</a>
+                        </div>
+                        <div><button id="download-weather-forecast-xlsx">Download XLSX</button></div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="tbl-weather-forecast"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Field Changelog
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="tbl-field-changelog"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+            </div>
+
+            
+        </div>
+        <!-- /#page-wrapper -->
+
+<% INCLUDE incl/footer.tt %>
+
+<script type="text/javascript">
+
+    function setHarvestDate()
+    {
+        if(!form_part2.form_harvest_date.value.localeCompare("2022-06-01"))
+        {
+            $('input[name="form_harvest_date"]').val(localStorage.getItem("harvest_date"));
+        }
+    }
+
+    function setHarvestWindowStart()
+    {
+        if(!form_part2.form_harvest_window_start.value.localeCompare("2022-06-01"))
+        {
+            $('input[name="form_harvest_window_start"]').val(localStorage.getItem("harvest_window_start"));
+        }
+    }
+
+    function setHarvestWindowEnd()
+    {
+        if(!form_part2.form_harvest_window_end.value.localeCompare("2022-06-01"))
+        {
+            $('input[name="form_harvest_window_end"]').val(localStorage.getItem("harvest_window_end"));
+        }
+    }
+
+    var distinctCalc = function(values, data, calcParams) {
+        //values - array of column values
+        //data - all table data
+        //calcParams - params passed from the column definition object
+
+        var calc = 0;
+        const map1 = new Map();
+
+        values.forEach(function(value){
+            map1.set(value, 1);
+        });
+
+        calc = map1.size;
+        return calc;
+    };
+
+    // See: http://tabulator.info/examples/4.9#ajax
+
+    //Define variables for input elements
+    var fieldEl = document.getElementById("filter-field");
+    var typeEl = document.getElementById("filter-type");
+    var valueEl = document.getElementById("filter-value");
+
+    //Trigger setFilter function with correct parameters
+    function updateFilter()
+    {
+        var filterVal = fieldEl.options[fieldEl.selectedIndex].value;
+        var typeVal = typeEl.options[typeEl.selectedIndex].value;
+
+        var filter = filterVal == "function" ? customFilter : filterVal;
+
+        if(filterVal == "function" ) {
+            typeEl.disabled = true;
+            valueEl.disabled = true;
+        } else{
+            typeEl.disabled = false;
+            valueEl.disabled = false;
+        }
+
+        if(filterVal) {
+            all_fields_table.setFilter(filter,typeVal, valueEl.value);
+        }
+    }
+
+    //Update filters on value change
+    document.getElementById("filter-field").addEventListener("change", updateFilter);
+    document.getElementById("filter-type").addEventListener("change", updateFilter);
+    document.getElementById("filter-value").addEventListener("keyup", updateFilter);
+
+    //Clear filters on "Clear Filters" button click
+    document.getElementById("filter-clear").addEventListener("click", function(){
+        fieldEl.value = "";
+        typeEl.value = "=";
+        valueEl.value = "";
+
+        all_fields_table.clearFilter();
+
+        all_fields_table.getColumn("region").setHeaderFilterValue("");
+        all_fields_table.getColumn("seed_plant").setHeaderFilterValue("");
+        all_fields_table.getColumn("tracking_number").setHeaderFilterValue("");
+        all_fields_table.getColumn("hybrid").setHeaderFilterValue("");
+        all_fields_table.getColumn("picker_group").setHeaderFilterValue("");
+        all_fields_table.getColumn("female").setHeaderFilterValue("");
+        all_fields_table.getColumn("male").setHeaderFilterValue("");
+        all_fields_table.getColumn("grower").setHeaderFilterValue("");
+        all_fields_table.getColumn("active_ha").setHeaderFilterValue("");
+        all_fields_table.getColumn("yield_ton_ha").setHeaderFilterValue("");
+        all_fields_table.getColumn("trucks").setHeaderFilterValue("");
+        all_fields_table.getColumn("harvest_date").setHeaderFilterValue("");
+        all_fields_table.getColumn("harvest_window_start").setHeaderFilterValue("");
+        all_fields_table.getColumn("harvest_window_end").setHeaderFilterValue("");
+        all_fields_table.getColumn("hom_harv_date").setHeaderFilterValue("");
+        all_fields_table.getColumn("hom_moisture").setHeaderFilterValue("");
+        all_fields_table.getColumn("dh_qualifyed").setHeaderFilterValue("");
+        all_fields_table.getColumn("suspect").setHeaderFilterValue("");
+        all_fields_table.getColumn("suspect_comments").setHeaderFilterValue("");
+        all_fields_table.getColumn("husking_difficulty").setHeaderFilterValue("");
+        all_fields_table.getColumn("mst").setHeaderFilterValue("");
+        all_fields_table.getColumn("mst_date").setHeaderFilterValue("");
+        all_fields_table.getColumn("actual_harvest_date").setHeaderFilterValue("");
+        all_fields_table.getColumn("actual_harvest_moisture").setHeaderFilterValue("");
+    });
+
+    //trigger download of data.xlsx file
+    document.getElementById("download-all-fields-xlsx").addEventListener("click", function(){
+        all_fields_table.download("xlsx", "field_manager.xlsx", {sheetName:"Field_Manager"});
+    });
+
+    //trigger download of data.xlsx file
+    document.getElementById("download-moisture-samples-xlsx").addEventListener("click", function(){
+        tbl_moisture_samples.download("xlsx", "moisture_samples.xlsx", {sheetName:"Moisture_Samples"});
+    });
+
+    //trigger download of data.xlsx file
+    document.getElementById("download-moisture-projection-xlsx").addEventListener("click", function(){
+        tbl_moisture_projection.download("xlsx", "moisture_projection.xlsx", {sheetName:"Moisture_Projection"});
+    });
+
+    //trigger download of data.xlsx file
+    document.getElementById("download-weather-forecast-xlsx").addEventListener("click", function(){
+        tbl_weather_forecast.download("xlsx", "weather_forecast.xlsx", {sheetName:"Weather_Forecast_TWC"});
+    });
+
+
+    function getFormattedDate(date)
+    {
+        var year = date.getFullYear();
+        var month = (1 + date.getMonth()).toString();
+        month = month.length > 1 ? month : '0' + month;
+        var day = date.getDate().toString();
+        day = day.length > 1 ? day : '0' + day;
+        return month + '/' + day + '/' + year;
+    }
+
+
+    /***************************************************************************/
+    document.getElementById("btn_save_changes").addEventListener("click", onSaveChanges, false);
+
+    function onSaveChanges()
+    {
+        console.log("Button clicked!!");
+        // Validate all input data before saving in DB.
+        validaDados()
+
+    }
+
+    /***************************************************************************/
+    document.getElementById("btn_clear_actual_harv_date").addEventListener("click", onClearActualHarvDate, false);
+
+    function onClearActualHarvDate()
+    {
+        $('input[name="form_actual_harvest_date"]').val("");
+
+    }
+
+    /***************************************************************************/
+    function isNumber(n) {
+        return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+
+    /***************************************************************************/
+    function valida_dados1()
+    {
+        var nomeform = form_part1;
+
+        if (nomeform.form_area.value=="" || !isNumber(nomeform.form_area.value))
+        {
+            alert ("Please inform a valid value for the area of the field.");
+            return false;
+        }
+
+        if (nomeform.form_yield_ton_ha.value=="" || !isNumber(nomeform.form_yield_ton_ha.value))
+        {
+            alert ("Please inform a valid value for the yield of the field.");
+            return false;
+        }
+
+        // check harvest dates.
+        // The localeCompare() method returns sort order -1, 1, or 0 (for before, after, or equal).
+        if(!form_part2.form_actual_harvest_date.value.localeCompare("00/00/0000"))
+        {
+            // Since we don't have actual harvest dates, do the comparison.
+            if(form_part2.form_est_harv_date.value.localeCompare(form_part2.form_hom_harv_date.value))
+            {
+                console.log("Dates are different (in function)");
+                if(form_part2.form_hom_reason.value.localeCompare("select")==0)
+                {
+                    alert("Please provide a reson for selecting a different harvest date provided by HOM.")
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    /***************************************************************************/
+    function validaDados()
+    {
+        var form_OK = false;
+
+        // Get all form data
+        var form_field                = form_part1.form_field.value;
+        var form_grower               = form_part1.form_grower.value;
+        var form_hybrid               = form_part1.form_hybrid.value;
+        var form_picker_group         = form_part1.form_picker_group.value;
+        var form_dh_qualified         = form_part1.form_dh_qualified.value;
+        var form_area                 = form_part1.form_area.value;
+        var form_yield_ton_ha         = form_part1.form_yield_ton_ha.value;
+        var form_seed_plant           = form_part1.form_seed_plant.value;
+        var form_harvest_window_start = form_part2.form_harvest_window_start.value;
+        var form_harvest_window_end   = form_part2.form_harvest_window_end.value;
+        var form_harvest_date         = form_part2.form_harvest_date.value;
+        var form_hom_harv_date        = form_part2.form_hom_harv_date.value;
+        var form_hom_moisture         = form_part2.form_hom_moisture.checked; // true or false.
+        var form_actual_harvest_date  = form_part2.form_actual_harvest_date.value;
+        var form_hom_reason           = form_part2.form_hom_reason.value;
+
+        var user_id = $('#user_id').html();
+
+        // print values only for double check;
+        console.log("form_field: " + form_field);
+        console.log("form_grower: " + form_grower);
+        console.log("form_hybrid: " + form_hybrid);
+        console.log("form_picker_group: " + form_picker_group);
+        console.log("form_dh_qualified: " + form_dh_qualified);
+        console.log("form_area: " + form_area);
+        console.log("form_yield_ton_ha: " + form_yield_ton_ha);
+        console.log("form_seed_plant: " + form_seed_plant);
+        console.log("form_harvest_window_start: " + form_harvest_window_start);
+        console.log("form_harvest_window_end: " + form_harvest_window_end);
+        console.log("form_harvest_date: " + form_harvest_date);
+        console.log("form_hom_harv_date: " + form_hom_harv_date);
+        console.log("form_hom_moisture: " + form_hom_moisture);
+        console.log("form_actual_harvest_date: " + form_actual_harvest_date);
+        console.log("form_hom_reason: " + form_hom_reason);
+        console.log("user_id: " + user_id);
+        
+        form_OK = valida_dados1();
+        console.log("Form OK?: " + form_OK);
+
+        if(form_OK)
+        {
+            // Update data in DB using ajax
+            var dataString = "form_field=" + form_field;
+            dataString += "&form_grower=" + form_grower;
+            dataString += "&form_hybrid=" + form_hybrid;
+            dataString += "&form_picker_group=" + form_picker_group;
+            dataString += "&form_dh_qualified=" + form_dh_qualified;
+            dataString += "&form_area=" + form_area;
+            dataString += "&form_yield_ton_ha=" + form_yield_ton_ha;
+            dataString += "&form_seed_plant=" + form_seed_plant;
+            dataString += "&form_harvest_window_start=" + form_harvest_window_start;
+            dataString += "&form_harvest_window_end=" + form_harvest_window_end;
+            dataString += "&form_harvest_date=" + form_harvest_date;
+            dataString += "&form_hom_harv_date=" + form_hom_harv_date;
+            dataString += "&form_hom_moisture=" + form_hom_moisture;
+            dataString += "&form_actual_harvest_date=" + form_actual_harvest_date;
+            dataString += "&form_hom_reason=" + form_hom_reason;
+            dataString += "&user_id=" + user_id;
+            
+            console.log(dataString);
+
+            $.ajax(
+            {
+                type: "POST",
+                url: "/ajax-update-field-data",
+                data: dataString,
+                crossDomain: true,
+                cache: false,
+                beforeSend: function () {$('#espere').html("Please wait..."); },
+                success: function (data) {
+                    alert("Field updated successfully.");
+                    $('#espere').html("Field updated successfully!");
+                    // Refresh all fields table.
+                    all_fields_table.replaceData();
+                    tbl_field_changelog.replaceData();
+                },
+                error: function (jqXHR, exception) {
+                    var msg = '';
+                    if (jqXHR.status === 0) {
+                        msg = 'Not connected.\n Please check network connection.';
+                    } else if (jqXHR.status == 404) {
+                        msg = 'Page not found. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msg = 'Internal server error [500].';
+                    } else if (exception === 'parsererror') {
+                        msg = 'Error when trying to process the answer (JSON).';
+                    } else if (exception === 'timeout') {
+                        msg = 'Time limit exceeded.';
+                    } else if (exception === 'abort') {
+                        msg = 'Ajax request was aborted.';
+                    } else {
+                        msg = 'Unknown error.\n' + jqXHR.responseText;
+                    }
+                    $('#espere').html(msg);
+                    alert(msg);
+                }
+            });
+        }
+    }
+
+    /***************************************************************************/
+    
+    function setFormData(tbl_data, column_name, key, element_id)
+    {
+        var items=[], options=[];
+
+        tbl_data.forEach(function (arrayItem) {
+            var x = arrayItem[column_name];
+            x = x.replace(/^\W+|\W+$/g, "");
+            items.push(x);
+        });
+
+        //restrict array to unique items
+        uniqueArray = items.filter(function(item, pos) {
+            return items.indexOf(item) == pos;
+        })
+
+        //iterate unique array and build array of select options
+        $.each( uniqueArray, function(i, item){
+            if(item == key)
+            {
+                options.push('<option value="' + item + '"selected>' + item + '</option>');    
+            } else {
+                options.push('<option value="' + item + '">' + item + '</option>');
+            }
+        })
+
+        //finally empty the select and append the items from the array
+        $('#' + element_id).empty().append( options.join() );
+    }
+
+    /***************************************************************************/
+
+    var tbl_weather_forecast = new Tabulator("#tbl-weather-forecast", {
+        movableRows: false,
+        height:"600px",
+        rowFormatter:function(row){
+            var precipitation = row.getData().precipitation;
+            if(precipitation > 0){
+                row.getElement().style.backgroundColor = "#F5B7B1";
+            }
+        },
+        paginationSize:20,
+        placeholder:"No Data Set",
+        columns:[
+            {title:"Field", field:"field", sorter:"text"},
+            {title:"Date", field:"date", formatter:"datetime", formatterParams:{
+                inputFormat:"YYYY-MM-DD",
+                outputFormat:"DD/MM/YY",
+                invalidPlaceholder:"(invalid date)",
+            }},
+            
+            {title:"Day of Week", field:"dow", sorter:"text"},
+            {title:"Tmin (C)", field:"tmin", sorter:"number"},
+            {title:"Tmax (C)", field:"tmax", sorter:"number"},
+            {title:"Precip. Chance (%)", field:"precipitation_chance", sorter:"number"},
+            {title:"Precipitation (mm)", field:"precipitation", sorter:"number"},
+            {title:"Narrative", field:"narrative", sorter:"text"},
+        ],
+        
+    });
+
+    /***************************************************************************/
+    // Show in a table all the changes performed in the selected field.
+    var tbl_field_changelog = new Tabulator("#tbl-field-changelog", {
+        movableRows: false,
+        height:"600px",
+        paginationSize:10,
+        placeholder:"No Data Set",
+        columns:[
+            {title:"Field", field:"tracking_number", sorter:"text"},
+            {title:"Date", field:"update_timestamp", formatter:"datetime", formatterParams:{
+                // inputFormat:"YYYY-MM-DD",
+                outputFormat:"DD/MM/YY HH:mm:ss",
+                invalidPlaceholder:"(invalid date)",
+            }},
+
+            {title:"User ID", field:"user_id", sorter:"text"},
+            {title:"Picker Group", field:"picker_group", sorter:"text"},
+            {title:"Seed Plant", field:"seed_plant", sorter:"text"},
+            {title:"Yield (ton/ha)", field:"yield_ton_ha", sorter:"text"},
+            {title:"DH Qualified", field:"dh_qualifyed", sorter:"text"},
+            {title:"harvest_window_start", field:"harvest_window_start", sorter:"number"},
+            {title:"harvest_window_end", field:"harvest_window_end", sorter:"number"},
+            {title:"harvest_date", field:"harvest_date", sorter:"number"},
+            {title:"HOM reason", field:"hom_reason", sorter:"text"},
+        ],
+    });
+
+    /***************************************************************************/
+
+    var tbl_moisture_projection = new Tabulator("#tbl-moisture-projection", {
+        movableRows: false,
+        height:"311px",
+        layout:"fitColumns",
+        rowFormatter:function(row){
+            var moisture = row.getData().moisture;
+            var limite_superior = row.getData().limite_superior;
+            var limite_inferior = row.getData().limite_inferior;
+            if(moisture <= limite_superior && moisture >= limite_inferior){
+                row.getElement().childNodes[0].style.backgroundColor = "#F7DC6F";
+                row.getElement().childNodes[1].style.backgroundColor = "#F7DC6F";
+                row.getElement().childNodes[2].style.backgroundColor = "#F7DC6F";
+                row.getElement().childNodes[3].style.backgroundColor = "#F7DC6F";
+            }
+        },
+        selectable:1,
+        paginationSize:20,
+        placeholder:"No Data Set",
+        columns:[
+            {title:"Field", field:"tracking_number", sorter:"text"},
+            {title:"Date", field:"harv_date", formatter:"datetime", formatterParams:{
+                inputFormat:"YYYY-MM-DD",
+                outputFormat:"DD/MM/YY",
+                invalidPlaceholder:"(invalid date)",
+            }},
+            
+            {title:"Moisture", field:"moisture", sorter:"number"},
+            {title:"DDR", field:"drydown_rate", sorter:"number"},
+            {title:"Moisture upper bound", field:"limite_superior", sorter:"number"},
+            {title:"Moisture lower bound", field:"limite_inferior", sorter:"number"},
+        ],
+        
+    });
+
+    /***************************************************************************/
+    var tbl_moisture_inspections = new Tabulator("#tbl-moisture-inspections", {
+        movableRows: false,
+        height:"311px",
+        layout:"fitColumns",
+        selectable:1,
+        // ajaxURL:"/harv-plan-all-fields",
+        paginationSize:20,
+        placeholder:"No Data Set",
+        columns:[
+            {title:"Field", field:"tracking_number", sorter:"text"},
+            {title:"Date", field:"date", formatter:"datetime", formatterParams:{
+                inputFormat:"YYYY-MM-DD",
+                outputFormat:"DD/MM/YY",
+                invalidPlaceholder:"(invalid date)",
+            }},
+            
+            {title:"P90", field:"p90", sorter:"number"},
+            // {title:"Source", field:"source", sorter:"number"},
+        ],
+        rowClick:function(e, row) {
+            var h = row.getData();
+            console.log(h);
+            var date = h['date'];
+            var field = h['field'];
+            var url1 = "/ajax-moisture-sample-data?field=" + field + "&date=" + date;
+            tbl_moisture_samples.setData(url1);
+            
+        }
+    });
+
+    /***************************************************************************/
+    var tbl_moisture_samples = new Tabulator("#tbl-moisture-samples", {
+        movableRows: false,
+        height:"311px",
+        layout:"fitColumns",
+        selectable:1,
+        paginationSize:20,
+        placeholder:"No Data Set",
+        columns:[
+            {title:"Field", field:"tracking_number", sorter:"text"},
+            {title:"Date", field:"date", formatter:"datetime", formatterParams:{
+                inputFormat:"YYYY-MM-DD",
+                outputFormat:"DD/MM/YY",
+                invalidPlaceholder:"(invalid date)",
+            }},
+            
+            {title:"Question code", field:"question_code", sorter:"text"},
+            {title:"Moisture", field:"moisture", sorter:"number"},
+        ],
+        
+    });
+
+    /***************************************************************************/
+    var all_fields_table = new Tabulator("#all-fields-table", {
+        height:"600px", //set the table height option
+        selectable:1,
+        ajaxURL:"/ajax-all-fields?plant=<% plant %>&plantNumber=<% plantNumber %>",
+        paginationSize:20,
+        placeholder:"No Data Set",
+        
+        columns:[
+            {title:"Region", field:"region", headerFilter:"input", sorter:"text", bottomCalc:distinctCalc},
+            {title:"Seed Plant", field:"seed_plant", headerFilter:"input", sorter:"text", bottomCalc:distinctCalc},
+            {title:"Tracking Number", field:"tracking_number", headerFilter:"input", sorter:"text", bottomCalc:distinctCalc},
+            {title:"Hybrid", field:"hybrid", headerFilter:"input", sorter:"text", bottomCalc:distinctCalc},
+            {title:"Picker Group", field:"picker_group", headerFilter:"input", sorter:"text", bottomCalc:distinctCalc},
+            {title:"Female", field:"female", sorter:"number", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", bottomCalc:"sum"},
+            {title:"Male", field:"male", headerFilter:"input", sorter:"number"},
+            {title:"Grower", field:"grower", headerFilter:"input", sorter:"text", bottomCalc:distinctCalc},
+            {title:"Area", field:"active_ha", sorter:"number", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", bottomCalc:"sum"},
+            {title:"Yield (ton/ha)", field:"yield_ton_ha", sorter:"number", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", bottomCalc:"sum"},
+            {title:"Trucks", field:"trucks", sorter:"number", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", bottomCalc:"sum"},
+            {title:"Est.Harv.Date", field:"harvest_date", sorter:"text", headerFilter:"input", formatter:function(cell) {
+                cell.getElement().style.backgroundColor = "#FFF9C4";
+                return '<span style=color:blue>' + cell.getRow().getData().harvest_date + '</span>';
+            }},
+            {title:"harvest_window_start", field:"harvest_window_start", headerFilter:"input", formatter:"datetime", formatterParams:{
+                inputFormat:"YYYY-MM-DD",
+                outputFormat:"DD/MM/YY",
+                invalidPlaceholder:"(invalid date)",
+            }},
+            {title:"harvest_window_end", field:"harvest_window_end", headerFilter:"input", formatter:"datetime", formatterParams:{
+                inputFormat:"YYYY-MM-DD",
+                outputFormat:"DD/MM/YY",
+                invalidPlaceholder:"(invalid date)",
+            }},
+            // From HOM output
+            {title:"HOM.Harv.Date", field:"hom_harv_date", sorter:"text", headerFilter:"input", formatter:function(cell) {
+                cell.getElement().style.backgroundColor = "#D4EFDF";
+                return '<span style=color:blue>' + cell.getRow().getData().hom_harv_date + '</span>';
+            }},
+            {title:"HOM.Moisture", field:"hom_moisture", sorter:"number", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", formatter:function(cell) {
+                cell.getElement().style.backgroundColor = "#D4EFDF";
+                return '<span style=color:blue>' + cell.getRow().getData().hom_moisture + '</span>';
+            }},
+            {title:"DH Qualified", field:"dh_qualifyed", headerFilter:"input", sorter:"text", bottomCalc:distinctCalc},
+            {title:"Suspect", field:"suspect", sorter:"number", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", bottomCalc:"sum"},
+            {title:"Suspect Comments", field:"suspect_comments", sorter:"number", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", bottomCalc:"sum"},
+            {title:"Husking Difficulty", field:"husking_difficulty", headerFilter:"input", sorter:"text"},
+            {title:"P90", field:"mst", sorter:"number", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", bottomCalc:"sum"},
+            {title:"mst_date", field:"mst_date", headerFilter:"input", formatter:"datetime", formatterParams:{
+                inputFormat:"YYYY-MM-DD",
+                outputFormat:"DD/MM/YY",
+                invalidPlaceholder:"(invalid date)",
+            }},
+            {title:"Actual Harv.Date", field:"actual_harvest_date", headerFilter:"input", formatter:"datetime", formatterParams:{
+                inputFormat:"YYYY-MM-DD",
+                outputFormat:"DD/MM/YY",
+                invalidPlaceholder:"(invalid date)",
+            }},
+            {title:"Actual Harv.Moisture", field:"actual_harvest_moisture", sorter:"number", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", bottomCalc:"sum"},
+            
+        ],
+        rowClick:function(e, row){
+            var h = row.getData();
+            console.log(h);
+
+            var field = h['tracking_number'];
+            var grower = h['grower'];
+            var hybrid = h['hybrid'];
+            var active_ha = h['active_ha'];
+            var yield_ton_ha = h['yield_ton_ha'];
+            var harvest_window_start = h['harvest_window_start'];
+            var harvest_window_end = h['harvest_window_end'];
+            var harvest_date = h['harvest_date'];
+            var hom_harv_date = h['hom_harv_date'];
+            var hom_moisture = h['hom_moisture'];
+            var picker_group = h['picker_group'];
+            var seed_plant = h['seed_plant'];
+            var actual_harvest_date = h['actual_harvest_date'];
+
+            localStorage.setItem("harvest_window_start", harvest_window_start);
+            localStorage.setItem("harvest_window_end", harvest_window_end);
+            localStorage.setItem("harvest_date", harvest_date);
+            localStorage.setItem("hom_harv_date", hom_harv_date);
+            localStorage.setItem("hom_moisture", hom_moisture);
+            localStorage.setItem("picker_group", picker_group);
+            localStorage.setItem("seed_plant", seed_plant);
+            
+
+            tbl_moisture_samples.clearData();
+
+            if(hom_harv_date == "0000-00-00")
+            {
+                tbl_moisture_inspections.clearData();
+                tbl_moisture_projection.clearData();
+                tbl_weather_forecast.clearData();
+            } else {
+                // Get moisture inspections for field.
+                var url1 = "/ajax-moisture-inspections-data?field=" + field;
+                tbl_moisture_inspections.setData(url1);
+
+                ///////////////////////////////////////////////////////////////////////////
+                // Get actual DDR from P90's (slope of the linear regression created)
+                var request_actual_ddr = $.ajax({
+                    type: "GET",
+                    url: "/ajax-actual-ddr?field=" + field,
+                    crossDomain: true,
+                    cache: false,
+                    beforeSend: function () {  }
+                });
+
+                request_actual_ddr.done(function (msg) {
+                    $("#actual_ddr").html(msg);
+                });
+
+                request_actual_ddr.fail(function (jqXHR, textStatus) {
+                    alert("Failed to get data about actual drydown rate: " + textStatus);
+                });
+                ///////////////////////////////////////////////////////////////////////////
+
+
+                // - Get moisture projection for the next days using as a reference the harvest date 
+                // provided in the output of HOM and the dry down rate from table per zone and month.
+                var url2 = "/ajax-moisture-projection?field=" + field + "&hom_harv_date=" + hom_harv_date + "&picker_group=" + picker_group + "&hom_moisture=" + hom_moisture + "&hybrid=" + hybrid;
+                tbl_moisture_projection.setData(url2);
+
+                var url3 = "/ajax-twc-data?field=" + field;
+                tbl_weather_forecast.setData(url3);
+
+                var url4 = "/ajax-field-changelog?field=" + field;
+                tbl_field_changelog.setData(url4);
+
+                // Set field data in form
+                // field name or "lote"
+                $('input[name="form_field"]').val(field);
+                $('input[name="form_grower"]').val(grower);
+                $('input[name="form_hybrid"]').val(hybrid);
+                $('input[name="form_area"]').val(active_ha);
+                $('input[name="form_yield_ton_ha"]').val(yield_ton_ha);
+                $('input[name="form_harvest_window_start"]').val(harvest_window_start);
+                $('input[name="form_harvest_window_end"]').val(harvest_window_end);
+                $('input[name="form_harvest_date"]').val(harvest_date);
+                $('input[name="form_hom_harv_date"]').val(hom_harv_date);
+                $('input[name="form_hom_moisture"]').val(hom_moisture);
+                $('input[name="form_actual_harvest_date"]').val(actual_harvest_date);
+
+                var all_fields_table_data = all_fields_table.getData();
+                setFormData(all_fields_table_data, "picker_group", h['picker_group'], "form_picker_group");
+                setFormData(all_fields_table_data, "dh_qualifyed", h['dh_qualifyed'], "form_dh_qualified");
+                setFormData(all_fields_table_data, "seed_plant", h['seed_plant'], "form_seed_plant");
+
+            }
+        },
+    });
+
+    /***************************************************************************/
+    var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+        }
+    };
+
+    $(document).ready(function(){
+
+        var user_id = getCookie('user_id');
+        $("#user_id").html(user_id);
+        // $("#user_id").html("EVSRO");
+
+        var plant = getUrlParameter("plant");
+        document.getElementById("plant").innerHTML = plant;
+
+        tbl_moisture_projection.hideColumn("limite_superior");
+        tbl_moisture_projection.hideColumn("limite_inferior");
+        
+        ///////////////////////////////////////////////////////////////////////////
+        ///////////////////////////////////////////////////////////////////////////
+
+        var request_moisture_last_update = $.ajax({
+            type: "GET",
+            url: '/ajax-moisture-last-update',
+            crossDomain: true,
+            cache: false,
+            beforeSend: function () {  }
+        });
+
+        request_moisture_last_update.done(function (msg) {
+            $("#moisture_wait").html(msg);
+        });
+
+        request_moisture_last_update.fail(function (jqXHR, textStatus) {
+            alert("Failed to get data about last moisture update: " + textStatus);
+        });
+        ///////////////////////////////////////////////////////////////////////////
+
+        var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+        var options={
+            format: 'yyyy-mm-dd',
+            container: container,
+            todayHighlight: true,
+            autoclose: true,
+            minDate: new Date(2022, 6, 1),
+            maxDate: new Date(2022, 12, 31),
+            setDate: new Date(2022, 6, 1)
+            // startDate: '+3d'
+        };
+
+        /*****************************************************************************/
+
+        var est_harv_date=$('input[name="form_harvest_date"]'); //our date input has the name "date"
+        est_harv_date.datepicker(options);
+
+        var actual_harv_date=$('input[name="form_actual_harvest_date"]'); //our date input has the name "date"
+        actual_harv_date.datepicker(options);
+
+        var form_harvest_window_start=$('input[name="form_harvest_window_start"]'); //our date input has the name "date"
+        form_harvest_window_start.datepicker(options);
+
+        var form_harvest_window_end=$('input[name="form_harvest_window_end"]'); //our date input has the name "date"
+        form_harvest_window_end.datepicker(options);
+        
+    })
+
+</script>
+<!-- End of file -->
+</body>
+</html>

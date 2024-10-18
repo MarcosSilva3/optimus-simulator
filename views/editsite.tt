@@ -1,0 +1,366 @@
+<% INCLUDE incl/header.tt %>
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Update receiving capacity</h1>
+                </div>
+            </div>
+                <!-- /.col-lg-12 -->
+            
+            <div class="row">
+                <div class="col-lg-3">
+                    <form>
+                    
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><% plant %></div>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <select id="form_region" class="form-control">
+                                        <option value="select">Select</option>
+                                        <% FOREACH region IN regions %>
+                                            <option value="<% region %>"><% region %></option>
+                                        <% END %>
+                                    </select>
+                                </div>
+
+                                <div class="form-group"> <!-- Date input -->
+                                    <label class="control-label" for="date">Start Date</label>
+                                    <input class="form-control" value='<% start_date %>' id="twstart" name="twstart" placeholder="YYYY-MM-DD" type="text"/>
+                                </div>
+
+                                <div class="form-group"> <!-- Date input -->
+                                    <label class="control-label" for="date">End Date</label>
+                                    <input class="form-control" value='<% end_date %>' id="twend" name="twend" placeholder="YYYY-MM-DD" type="text"/>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label" for="date">Ton.RW (ear)</label>
+                                    <input class="form-control" type="text" name="capton_ear" id="capton_ear" value='<% formdata.capton_ear %>'>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label" for="date">Ton.RW (bulk)</label>
+                                    <input class="form-control" type="text" name="capton_bulk" id="capton_bulk" value='<% formdata.capton_bulk %>'>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label" for="date"># of hybrids (ear)</label>
+                                    <input class="form-control" type="text" name="caphy_ear" id="caphy_ear" value='<% formdata.caphy_ear %>'>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label" for="date"># of hybrids (bulk)</label>
+                                    <input class="form-control" type="text" name="caphy_bulk" id="caphy_bulk" value='<% formdata.caphy_bulk %>'>
+                                </div>
+
+                                <input type="button" id="updatesite" value="Update Site Capacity" name="updatesite">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-lg-9">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> # of hybrids / day
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="morris-hys"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+
+                <div class="col-lg-9">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Ton.RW / day
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="morris-ton"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+
+                
+            </div>
+        </div>
+        <!-- /#page-wrapper -->
+
+<% INCLUDE incl/footer.tt %>
+
+<script type="text/javascript">
+
+    var graph_ton = Morris.Area({
+        element: 'morris-ton',
+        data: [],
+        xkey: 'period',
+        ykeys: ['ton_ear', 'ton_bulk'],
+        labels: ['Ton.RW (ear)', 'Ton.RW (bulk)'],
+        pointSize: 2,
+        hideHover: 'auto',
+        fillOpacity: 0.2,
+        resize: true
+    });
+    
+    var graph_hys = Morris.Area({
+        element: 'morris-hys',
+        data: [],
+        xkey: 'period',
+        ykeys: ['hys_ear', 'hys_bulk'],
+        labels: ['# of hybrids (ear)', '# of hybrids (bulk)'],
+        pointSize: 2,
+        hideHover: 'auto',
+        fillOpacity: 0.2,
+        resize: true
+    });
+    
+    /*
+    <% graph_ton %>
+
+    <% graph_hys %>
+    */
+    /**********************************************************************************************/
+    $(document).ready(function(){
+
+        var user_id = getCookie('user_id');
+        $("#user_id").html(user_id);
+        
+
+        // Reference: http://jonthornton.github.io/jquery-timepicker/
+        $('#pickup_time').timepicker({'timeFormat': 'H:i:s', 'step': 15 , 'forceRoundTime': true});
+    
+
+        var twstart=$('input[name="twstart"]'); //our date input has the name "date"
+        var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+        var options={
+            format: 'yyyy-mm-dd',
+            container: container,
+            todayHighlight: true,
+            autoclose: true
+        };
+        twstart.datepicker(options);
+
+        var twend=$('input[name="twend"]'); //our date input has the name "date"
+        var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+        var options={
+            format: 'yyyy-mm-dd',
+            container: container,
+            todayHighlight: true,
+            autoclose: true
+        };
+        twend.datepicker(options);
+    })
+    // end document ready
+    /**********************************************************************************************/
+    
+    document.getElementById("updatesite").addEventListener("click", onUpdateSite, false);
+
+    document.getElementById("form_region").addEventListener("change", onRegionSelected, false);
+
+    /**********************************************************************************************/
+
+    function onRegionSelected()
+    {
+        var region = document.getElementById("form_region").value;
+        var plant = getUrlParameter("plant");
+        var plantNumber = getUrlParameter("plantNumber");
+        var dataString = "plant=" + plant + "&plantNumber=" + plantNumber + "&region=" + region;
+
+        // cap ton
+        $.ajax(
+        {
+            type: "GET",
+            url: "/ajax-site-cap-ton",
+            data: dataString,
+            crossDomain: true,
+            cache: false,
+            beforeSend: function () { },
+            success: function (data) {
+                var res = JSON.parse(data);
+                graph_ton.setData(res);
+                graph_ton.redraw();
+            },
+            error: function (jqXHR, exception) {
+                var msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connected.\n Please check the network.';
+                } else if (jqXHR.status == 404) {
+                    msg = 'Page not found. [404]';
+                } else if (jqXHR.status == 500) {
+                    msg = 'Internal server error [500].';
+                } else if (exception === 'parsererror') {
+                    msg = 'Failed to parse answer (JSON).';
+                } else if (exception === 'timeout') {
+                    msg = 'Time limit exceeded.';
+                } else if (exception === 'abort') {
+                    msg = 'Aborted Ajax request.';
+                } else {
+                    msg = 'Unknown error.\n' + jqXHR.responseText;
+                }
+                alert(msg);
+            }
+        });
+
+        // cap hys
+        $.ajax(
+        {
+            type: "GET",
+            url: "/ajax-site-cap-hys",
+            data: dataString,
+            crossDomain: true,
+            cache: false,
+            beforeSend: function () { },
+            success: function (data) {
+                var res = JSON.parse(data);
+                graph_hys.setData(res);
+                graph_hys.redraw();
+            },
+            error: function (jqXHR, exception) {
+                var msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connected.\n Please check the network.';
+                } else if (jqXHR.status == 404) {
+                    msg = 'Page not found. [404]';
+                } else if (jqXHR.status == 500) {
+                    msg = 'Internal server error [500].';
+                } else if (exception === 'parsererror') {
+                    msg = 'Failed to parse answer (JSON).';
+                } else if (exception === 'timeout') {
+                    msg = 'Time limit exceeded.';
+                } else if (exception === 'abort') {
+                    msg = 'Aborted Ajax request.';
+                } else {
+                    msg = 'Unknown error.\n' + jqXHR.responseText;
+                }
+                alert(msg);
+            }
+        });
+
+    }
+
+
+    /**********************************************************************************************/
+    
+    var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+        }
+    };
+
+    /**********************************************************************************************/
+
+    function onUpdateSite()
+    {
+        var site        = "<% formdata.site_name %>";
+        var capton_ear  = document.getElementById("capton_ear").value;
+        var capton_bulk = document.getElementById("capton_bulk").value;
+        var caphy_ear   = document.getElementById("caphy_ear").value;
+        var caphy_bulk  = document.getElementById("caphy_bulk").value;
+        var twstart     = document.getElementById("twstart").value;
+        var twend       = document.getElementById("twend").value;
+        var region      = document.getElementById("form_region").value;
+        var plant = getUrlParameter("plant");
+        var plantNumber = getUrlParameter("plantNumber");
+
+        var dt_start = new Date(twstart);
+        var dt_end   = new Date(twend);
+
+        if(region == "select")
+        {
+            alert('Please select the region / receiving line');
+            return;
+        }
+
+        if(dt_end < dt_start) {
+            alert('Harv.Dates :: End date must be after start date!');
+            return;
+        }
+
+        if (isNaN( capton_ear )) {
+            // It isn't a number
+            alert('Please check the value of Ton.RW provided. Not a valid number!');
+            return;
+        } 
+
+        if (isNaN( capton_bulk )) {
+            // It isn't a number
+            alert('Please check the value of Ton.RW provided. Not a valid number!');
+            return;
+        } 
+
+        if (isNaN( caphy_ear )) {
+            // It isn't a number
+            alert('Please check the number of hybrids provided. Not a valid number!');
+            return;
+        } 
+
+        if (isNaN( caphy_bulk )) {
+            // It isn't a number
+            alert('Please check the number of hybrids provided. Not a valid number!');
+            return;
+        } 
+
+        var dataString = "site_name=" + site + "&twstart=" + twstart + "&twend=" + twend + "&capton_ear=" + capton_ear + "&capton_bulk=" + capton_bulk + "&caphy_ear=" + caphy_ear + "&caphy_bulk=" + caphy_bulk + "&region=" + region;
+
+        console.log(dataString);
+        
+        $.ajax(
+        {
+            type: "POST",
+            url: "/editsite_action",
+            data: dataString,
+            crossDomain: true,
+            cache: false,
+            beforeSend: function () { },
+            success: function (data) {
+                var url = "/editsite?plant=" + plant + "&plantNumber=" + plantNumber;
+                // window.location.href = url;
+                onRegionSelected();
+
+            },
+            error: function (jqXHR, exception) {
+                var msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connected.\n Please check the network.';
+                } else if (jqXHR.status == 404) {
+                    msg = 'Page not found. [404]';
+                } else if (jqXHR.status == 500) {
+                    msg = 'Internal server error [500].';
+                } else if (exception === 'parsererror') {
+                    msg = 'Failed to parse answer (JSON).';
+                } else if (exception === 'timeout') {
+                    msg = 'Time limit exceeded.';
+                } else if (exception === 'abort') {
+                    msg = 'Aborted Ajax request.';
+                } else {
+                    msg = 'Unknown error.\n' + jqXHR.responseText;
+                }
+                alert(msg);
+            }
+        });
+        
+    }
+
+    /**********************************************************************************************/
+
+</script>
+
+<!-- End of file -->
+</body>
+</html>

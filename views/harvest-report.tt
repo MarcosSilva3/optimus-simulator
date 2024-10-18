@@ -1,0 +1,152 @@
+<% INCLUDE incl/header.tt %>
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Harvest Report</h1>
+                </div>
+            </div>
+                <!-- /.col-lg-12 -->
+            
+            <div class="row">
+                <div class="col-lg-2">
+                    <form>
+                    
+                        <div class="panel panel-default">
+                            <div class="panel-heading">Select a period</div>
+                            <div class="panel-body">
+                                <div class="form-group has-success"> <!-- Date input -->
+                                    <label class="control-label" for="date">Start harv. date</label>
+                                    <input class="form-control" value='<% formdata.start_harv_date %>' id="start_harv_date" name="start_harv_date" placeholder="YYYY-MM-DD" type="text"/>
+                                </div>
+
+                                <div class="form-group has-success"> <!-- Date input -->
+                                    <label class="control-label" for="date">End harv. date</label>
+                                    <input class="form-control" value='<% formdata.end_harv_date %>' id="end_harv_date" name="end_harv_date" placeholder="YYYY-MM-DD" type="text"/>
+                                </div>
+                                <input type="button" id="btn-generate-report" value="Generate Report" name="btn-generate-report">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            
+                <div class="col-lg-9">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <input type="button" id="btn-generate-pdf" value="Generate PDF" name="btn-generate-pdf"><br>
+                        </div>
+                        <div class="panel-body" id="report-all">
+                            <div class="row">
+                                <div class="col-lg-9" id="report"> Report content
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div> <!-- end of row -->
+
+
+        </div>
+        <!-- /#page-wrapper -->
+
+<% INCLUDE incl/footer.tt %>
+
+<script type="text/javascript">
+
+    <% formdata.map %>
+
+    $(document).ready(function(){
+
+        var user_id = getCookie('user_id');
+        $("#user_id").html(user_id);
+
+        var start_harv_date=$('input[name="start_harv_date"]'); //our date input has the name "date"
+        var end_harv_date=$('input[name="end_harv_date"]'); //our date input has the name "date"
+
+        var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+
+        var options={
+            format: 'yyyy-mm-dd',
+            container: container,
+            todayHighlight: true,
+            autoclose: true,
+            setDate: new Date(),
+        };
+
+        start_harv_date.datepicker(options);
+        end_harv_date.datepicker(options);
+    })
+
+
+
+    document.getElementById("btn-generate-report").addEventListener("click", onGenerateReport, false);
+    document.getElementById("btn-generate-pdf").addEventListener("click", onGeneratePDF, false);
+
+
+    function onGenerateReport()
+    {
+        // Get data from the period selected
+        var start_harv_date = document.getElementById("start_harv_date").value;
+        var end_harv_date   = document.getElementById("end_harv_date").value;
+
+        var regex = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/;
+
+        var OK1 = regex.test(start_harv_date);
+        var OK2 = regex.test(end_harv_date);
+        if(!OK1 || !OK2)
+        {
+            console.log("Invalid date!");
+            console.log("start_harv_date: " + start_harv_date);
+            console.log("end_harv_date: " + end_harv_date);
+        } else {
+            console.log("Valid dates")
+            var dt_start = new Date(start_harv_date);
+            var dt_end = new Date(end_harv_date);
+
+            if(dt_end < dt_start)
+            {
+                alert('Harv.Dates :: End date must be after start date!');
+                return;
+            }
+
+            // get ajax data
+            $.ajax({
+                url : "/ajax-report-data",
+                type : 'get',
+                data : { start_harv_date: start_harv_date, end_harv_date: end_harv_date },
+                beforeSend : function(){
+                    $('#report').html("Please wait...");
+                }
+            })
+            .done(function(msg){
+                $('#report').html(msg);
+                // console.log(msg);
+            })
+            .fail(function(jqXHR, textStatus, msg){
+                alert("Error! Please try again!");
+            });
+        }
+    }
+
+    
+    function onGeneratePDF()
+    {
+        var element = document.getElementById('report-all');
+        var opt = {
+        // margin:       1,
+        filename:     'HOM-report-by-period.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'A4', orientation: 'landscape' }
+        };
+
+        // New Promise-based usage:
+        html2pdf().set(opt).from(element).save();
+    }
+
+</script>
+
+<!-- End of file -->
+</body>
+</html>

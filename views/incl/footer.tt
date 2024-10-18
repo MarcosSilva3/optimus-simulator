@@ -1,0 +1,113 @@
+</div>
+    <!-- /#wrapper -->
+
+    <!-- jQuery -->
+    <script src="vendor/jquery/jquery.min.js"></script>
+
+    <!-- jQuery Modal -->
+    <script src="vendor/jquery/jquery.modal.min.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+    <script src="vendor/bootstrap/js/jquery.timepicker.js"></script>
+    
+    <!-- Bootstrap Date Picker -->
+    <script type="text/javascript" src="vendor/bootstrap/js/bootstrap-datepicker.min.js"></script>
+
+    <!-- Metis Menu Plugin JavaScript -->
+    <script src="vendor/metisMenu/metisMenu.min.js"></script>
+
+    <!-- DataTables JavaScript -->
+    <script src="vendor/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="vendor/datatables-plugins/dataTables.bootstrap.min.js"></script>
+    <script src="vendor/datatables-responsive/dataTables.responsive.js"></script>
+
+    <!-- Morris Charts JavaScript -->
+    <script src="vendor/raphael/raphael.min.js"></script>
+    <script src="vendor/morrisjs/morris.min.js"></script>
+
+
+    <!-- Plotly Charts JavaScript -->
+    <script src="vendor/plotly/plotly-latest.min.js"></script>
+
+    <!-- Custom Theme JavaScript -->
+    <script src="dist/js/sb-admin-2.js"></script>
+
+    <!-- Tabulator JavaScript -->
+    <script type="text/javascript" src="vendor/tabulator-master/dist/js/tabulator.min.js"></script>
+    <script type="text/javascript" src="vendor/tabulator-master/dist/js/moment.min.js"></script>
+
+
+    <!-- html2pdf -->
+    <script type="text/javascript" src="vendor/html2pdf/html2pdf.bundle.min.js"></script>
+
+    <!-- sheetjs -->
+    <script type="text/javascript" src="vendor/sheetjs/xlsx.full.min.js"></script>
+
+    <script type="text/javascript">
+
+    $(document).ready(function(){
+        var plant = window.localStorage.getItem("plant");
+        document.getElementById("plant").innerHTML = plant;
+    })
+    
+
+    $('#solve').click(function() {
+        var user = $('#user_id').text();
+        var dataString = "user=" + user;
+        console.log(dataString);
+        
+        const params = new Proxy(new URLSearchParams(window.location.search), {
+          get: (searchParams, prop) => searchParams.get(prop),
+        });
+        
+        let plant = params.plant; // "some_value"
+        let plantNumber = params.plantNumber;
+        var redirect_url = "/dashboard?plant="+ plant + "&plantNumber=" + plantNumber;
+        
+        $.ajax(
+        {
+            async: true,
+            type: "POST",
+            url: "/solve",
+            data: dataString,
+            crossDomain: true,
+            cache: false,
+            beforeSend: function () { $('#loader').show(); },
+            success: function (data) {
+                $('#new-scenario').html(data);
+                $('#loader').hide();
+                window.location.href = redirect_url;
+            },
+            error: function (jqXHR, exception) {
+                var msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connected.\n Please check the network.';
+                } else if (jqXHR.status == 404) {
+                    msg = 'Page not found. [404]';
+                } else if (jqXHR.status == 500) {
+                    msg = 'Internal server error [500].';
+                } else if (exception === 'parsererror') {
+                    msg = 'Failed to parse answer (JSON).';
+                } else if (exception === 'timeout') {
+                    msg = 'Time limit exceeded.';
+                } else if (exception === 'abort') {
+                    msg = 'Aborted Ajax request.';
+                } else {
+                    msg = 'Unknown error.\n' + jqXHR.responseText;
+                }
+                alert(msg);
+            }
+        });
+
+        return false;
+    });
+
+    </script>
+
+
+
+
+
+    
+

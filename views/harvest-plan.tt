@@ -1,0 +1,1860 @@
+<% INCLUDE incl/header.tt %>
+
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Harvest Plan</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            
+            <div class="row">
+
+                <div class="col-lg-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Harvest Dates
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+
+                            <div style="max-width: 100%; margin: auto" id="dates-table"></div>
+
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Comments
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <textarea style="max-width: 100%; margin: auto" class="form-control" id="comments" rows="13"></textarea>
+                        </div>
+                        <input type="button" class="btn btn-default" id="btn_comments" value="Update Comments">
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                    
+                </div>
+                <!-- /.col-lg-3 -->
+
+                <div class="col-lg-8">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Fields (Selected Date) <span id='span_harv_date'></span> <span id='span_save_harv_plan'></span>
+                            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-add-field" id='btn_modal_add'>
+                                Add
+                            </button>
+                            <button type="button" class="btn btn-default" id='btn_remove_field'>
+                                Remove
+                            </button>
+                            </button>
+                            <button type="button" class="btn btn-default" data-toggle="modal" data-target="#modal-split-field" id='btn_modal_split'>
+                                Split
+                            </button>
+                            <button type="button" class="btn btn-danger" id='btn_save_plan'>
+                                Save Plan
+                            </button>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="fields-date-table"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> All fields (not harvested) <span id='selected_date'></span>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="all-fields-table"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+
+                <!-- /.col-lg-9 -->
+
+            </div>
+            <!-- /.row -->
+
+            <div class="row">
+                <div class="col-lg-9">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <input type="button" id="generate_pdf" value="Generate PDF" name="generate_pdf"><br>
+                        </div>
+                        <div class="panel-body" id="report-all">
+                            <div class="row">
+                                <div class="col-lg-9" id="report"> Report content
+                                    
+                                </div>
+                                <div style="max-width: 100%; margin: auto" id="report-table"></div>
+
+                                
+                            <!-- /.row -->
+                            </div>
+                        <!-- /.panel-body -->
+                        </div>
+                    <!-- /.panel panel-default -->
+                    </div>
+                </div>
+            </div>
+            
+
+        </div>
+        <!-- /#page-wrapper -->
+
+        <!-- Modal HTML embedded directly into document -->
+        <!-- The Modal -->
+        <div class="modal" id="modal-add-field">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Select field to add</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="modal-all-fields"></div>
+                        </div>
+                    </div>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal" id="btn_modal_add_action">Add</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal HTML embedded directly into document -->
+        <!-- The Modal -->
+        <div class="modal" id="modal-split-field">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <!-- Modal Header -->
+                    <div class="modal-header">
+                        <h4 class="modal-title">Please inform the number of trucks for the field and date selected</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+
+                    <!-- Modal body -->
+                    <div class="modal-body">
+                        <form>
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Split field</div>
+                                <div class="panel-body">
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <div class="form-group"> <!-- Field name -->
+                                                    <label class="control-label" for="date">Field</label>
+                                                    <input class="form-control" id="input_modal_split_field_name" name="input_modal_split_field_name" type="text" disabled>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group"> <!-- Field name -->
+                                                    <label class="control-label" for="date">Total # of trucks</label>
+                                                    <input class="form-control" id="input_modal_split_total_trucks" name="input_modal_split_total_trucks" type="text" disabled>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <div class="form-group"> <!-- Date input -->
+                                                    <label class="control-label" for="date">Harvest Date</label>
+                                                    <input class="form-control" id="input_modal_split_field_date1" name="input_modal_split_field_date1" placeholder="DD/MM/YYYY" type="text">
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                    <label class="control-label" for="date">Number of trucks</label>
+                                                    <input class="form-control" type="text" name="input_modal_split_camiones1" id="input_modal_split_camiones1" onkeypress="onKeyPressSplitTrucks1(event)" onfocusout="onFocusOutSplitTrucks1()">
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <div class="form-group"> <!-- Date input -->
+                                                    <label class="control-label" for="date">Harvest Date</label>
+                                                    <input class="form-control" id="input_modal_split_field_date2" name="input_modal_split_field_date2" placeholder="DD/MM/YYYY" type="text">
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                    <label class="control-label" for="date">Number of trucks</label>
+                                                    <input class="form-control" type="text" name="input_modal_split_camiones2" id="input_modal_split_camiones2" onkeypress="onKeyPressSplitTrucks2(event)" onfocusout="onFocusOutSplitTrucks2()">
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                        
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal" id="btn_modal_split_action">Split</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+<% INCLUDE incl/footer.tt %>
+
+<script type="text/javascript">
+
+    document.getElementById("btn_remove_field").addEventListener("click", onRemoveField, false);
+    document.getElementById("btn_modal_split").addEventListener("click", onSplitField, false);
+    document.getElementById("btn_modal_split_action").addEventListener("click", onSplitFieldAction, false);
+
+    // Add field to the selected date.
+    document.getElementById("btn_modal_add").addEventListener("click", onModalAdd, false);
+    document.getElementById("btn_modal_add_action").addEventListener("click", onModalAddAction, false);
+
+    // Save plan
+    document.getElementById("btn_save_plan").addEventListener("click", onSavePlan, false);
+
+    //-----------------------------------------------------------------------------------------------------//
+    //-----------------------------------------------------------------------------------------------------//
+    //-----------------------------------------------------------------------------------------------------//
+    function onSavePlan()
+    {
+        var data = fields_date_table.getData();
+        var user_id = $('#user_id').html();
+        var selected_harv_date = $('#span_harv_date').html();
+
+        var json = {};
+        json["data"] = data;
+        json["user_id"] = user_id;
+        json["harvest_plan_date"] = selected_harv_date;
+
+        var json_result = JSON.stringify(json);
+
+        $.ajax({
+            url : "/ajax-save-harvest-plan",
+            type : 'POST',
+            data : json_result,
+            beforeSend : function(){
+                $('#span_save_harv_plan').html("Saving harvest plan. Please wait...");
+            },
+            success: function (data) {
+                // Reload data of table with fields
+                // populate fields date table 
+                report_table.replaceData()
+                .then(function(){
+                    report_table.replaceData();
+                    var url2 = "/harv-plan-all-fields?date=" + selected_harv_date;
+                    all_fields_table.setData(url2);
+                    
+                })
+                .catch(function(error){
+                    //handle error loading data
+                });
+            }
+
+        })
+        .done(function(json){
+            var msg = "Harvest plan saved.";
+            $('#span_save_harv_plan').html(msg);
+        })
+        .fail(function(jqXHR, textStatus, msg){
+            alert("Error! Please try again!");
+        });
+    }
+    
+
+    //-----------------------------------------------------------------------------------------------------//
+    //-----------------------------------------------------------------------------------------------------//
+    //-----------------------------------------------------------------------------------------------------//
+
+    function onKeyPressSplitTrucks1(e)
+    {
+        if(e.keyCode === 13){
+            e.preventDefault(); // Ensure it is only this code that runs
+            var camiones1 = $('#input_modal_split_camiones1').val();
+            var camiones2 = $('#input_modal_split_camiones2').val();
+            var total_trucks = $('#input_modal_split_total_trucks').val();
+
+            camiones1 = parseInt(camiones1);
+            camiones2 = parseInt(camiones2);
+            total_trucks = parseInt(total_trucks);
+            if(camiones1 < total_trucks) {
+                camiones2 = total_trucks - camiones1;
+                $('#input_modal_split_camiones2').val(camiones2);
+            } else {
+                camiones1 = total_trucks-1;
+                camiones2 = total_trucks - camiones1;
+                $('#input_modal_split_camiones1').val(camiones1);
+                $('#input_modal_split_camiones2').val(camiones2);
+            }
+        }
+    }
+
+    function onFocusOutSplitTrucks1()
+    {
+        var camiones1 = $('#input_modal_split_camiones1').val();
+        var camiones2 = $('#input_modal_split_camiones2').val();
+        var total_trucks = $('#input_modal_split_total_trucks').val();
+
+        camiones1 = parseInt(camiones1);
+        camiones2 = parseInt(camiones2);
+        total_trucks = parseInt(total_trucks);
+        if(camiones1 < total_trucks) {
+            camiones2 = total_trucks - camiones1;
+            $('#input_modal_split_camiones2').val(camiones2);
+        } else {
+            camiones1 = total_trucks - 1;
+            camiones2 = total_trucks - camiones1;
+            $('#input_modal_split_camiones1').val(camiones1);
+            $('#input_modal_split_camiones2').val(camiones2);
+        }
+    }
+
+    function onKeyPressSplitTrucks2(e)
+    {
+        if(e.keyCode === 13){
+            e.preventDefault(); // Ensure it is only this code that runs
+            var camiones1 = $('#input_modal_split_camiones1').val();
+            var camiones2 = $('#input_modal_split_camiones2').val();
+            var total_trucks = $('#input_modal_split_total_trucks').val();
+
+            camiones1 = parseInt(camiones1);
+            camiones2 = parseInt(camiones2);
+            total_trucks = parseInt(total_trucks);
+            if(camiones2 < total_trucks) {
+                camiones1 = total_trucks - camiones2;
+                $('#input_modal_split_camiones1').val(camiones1);
+            } else {
+                camiones2 = total_trucks - 1;
+                camiones1 = total_trucks - camiones2;
+                $('#input_modal_split_camiones1').val(camiones1);
+                $('#input_modal_split_camiones2').val(camiones2);
+            }
+        }
+    }
+
+    function onFocusOutSplitTrucks2()
+    {
+        var camiones1 = $('#input_modal_split_camiones1').val();
+        var camiones2 = $('#input_modal_split_camiones2').val();
+        var total_trucks = $('#input_modal_split_total_trucks').val();
+
+        camiones1 = parseInt(camiones1);
+        camiones2 = parseInt(camiones2);
+        total_trucks = parseInt(total_trucks);
+        if(camiones2 < total_trucks) {
+            camiones1 = total_trucks - camiones2;
+            $('#input_modal_split_camiones1').val(camiones1);
+        } else {
+            camiones2 = total_trucks - 1;
+            camiones1 = total_trucks - camiones2;
+            $('#input_modal_split_camiones1').val(camiones1);
+            $('#input_modal_split_camiones2').val(camiones2);
+        }
+    }
+
+    function onSplitFieldAction()
+    {
+        var field = $('#input_modal_split_field_name').val();
+        var date1 = $('#input_modal_split_field_date1').val().split("/");
+        var date2 = $('#input_modal_split_field_date2').val().split("/");
+        var fecha_estimada_cosecha1 = date1[2] + "-" + date1[1] + "-" + date1[0];
+        var fecha_estimada_cosecha2 = date2[2] + "-" + date2[1] + "-" + date2[0];
+        var camiones1 = $('#input_modal_split_camiones1').val();
+        var camiones2 = $('#input_modal_split_camiones2').val();
+        var total_trucks = $('#input_modal_split_total_trucks').val();
+
+        var local_storage_total_trucks = localStorage.getItem('split_total_trucks');
+        var local_storage_selected_harv_date = localStorage.getItem('split_selected_harv_date');
+        var local_storage_fecha_estimada_cosecha = localStorage.getItem('split_fecha_estimada_cosecha');
+        var local_storage_selected_field = localStorage.getItem('split_selected_field');
+
+        camiones1 = parseInt(camiones1);
+        camiones2 = parseInt(camiones2);
+
+        var total_trucks_form = camiones1 + camiones2;
+
+        console.log("total_trucks: " + total_trucks);
+        console.log("total_trucks_form: " + total_trucks_form);
+
+        var original_harv_date = $('#span_harv_date').html();
+
+        // First check if dates are different
+        if(fecha_estimada_cosecha1 == fecha_estimada_cosecha2)
+        {
+            alert("Dates must be different!");
+            return false;
+        }
+
+        if(total_trucks != total_trucks_form)
+        {
+            alert("The sum of trucks must be equal to "+ total_trucks);
+            return false;
+        }
+
+        // Check also if both numbers of trucks are greather than zero
+        if(camiones1 <= 0 || camiones2 <= 0)
+        {
+            alert("Please check again the number of trucks provided.");
+            return false;
+        }
+
+        // If dates are not equal, we can proceed.
+        console.log("fecha_estimada_cosecha1: " + fecha_estimada_cosecha1);
+        console.log("fecha_estimada_cosecha2: " + fecha_estimada_cosecha2);
+        var dataString = "field=" + field;
+        dataString += "&original_harv_date=" + original_harv_date;
+        dataString += "&harv_date1=" + fecha_estimada_cosecha1;
+        dataString += "&harv_date2=" + fecha_estimada_cosecha2;
+        dataString += "&trucks1=" + camiones1;
+        dataString += "&trucks2=" + camiones2;
+
+        $.ajax(
+        {
+            type: "POST",
+            url: "/ajax-split-field",
+            data: dataString,
+            crossDomain: true,
+            cache: false,
+            beforeSend: function () { },
+            success: function (data) {
+                // Reload data of table with fields
+                // populate fields date table 
+                dates_table.replaceData()
+                .then(function(){
+                    fields_date_table.replaceData();
+                })
+                .then(function(){
+                    all_fields_table.replaceData();
+                })
+                .then(function(){
+                    report_table.replaceData();
+                })
+                .catch(function(error){
+                    //handle error loading data
+                });
+            },
+            error: function (jqXHR, exception) {
+                var msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connected.\n Please check network connection.';
+                } else if (jqXHR.status == 404) {
+                    msg = 'Page not found. [404]';
+                } else if (jqXHR.status == 500) {
+                    msg = 'Internal server error [500].';
+                } else if (exception === 'parsererror') {
+                    msg = 'Error when trying to process the answer (JSON).';
+                } else if (exception === 'timeout') {
+                    msg = 'Time limit exceeded.';
+                } else if (exception === 'abort') {
+                    msg = 'Ajax request was aborted.';
+                } else {
+                    msg = 'Unknown error.\n' + jqXHR.responseText;
+                }
+                alert(msg);
+            }
+        });
+    }    
+    
+    //-----------------------------------------------------------------------------------------------------//
+    //-----------------------------------------------------------------------------------------------------//
+    //-----------------------------------------------------------------------------------------------------//
+    
+
+    function onSplitField()
+    {
+        var selectedRows = fields_date_table.getSelectedRows();
+        var selected_harv_date = $('#span_harv_date').html();
+        var harv_date_split = selected_harv_date.split("-");
+        var arrayLength = selectedRows.length;
+        console.log("Number of selected rows: " + arrayLength);
+        console.log("selected_harv_date: " + selected_harv_date);
+        console.log(selectedRows);
+
+        var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+        var options={
+            format: 'dd/mm/yyyy',
+            container: container,
+            todayHighlight: true,
+            autoclose: true,
+            minDate: new Date(2022, 1, 1),
+            maxDate: new Date(2022, 11, 31),
+            setDate: new Date(harv_date_split[0], harv_date_split[1], harv_date_split[2])
+        };
+        // $('input[name="input_modal_split_field_date1"]').datepicker(options);
+
+        if(arrayLength == 1) {
+            console.log("OK, only one row selected");
+            var data = selectedRows[0]._row.data;
+            var field = data.field;
+            var fecha_estimada_cosecha = data.harv_date
+            var camiones = data.trucks;
+
+            localStorage.setItem('split_total_trucks', camiones);
+            localStorage.setItem('split_selected_harv_date', selected_harv_date);
+            localStorage.setItem('split_fecha_estimada_cosecha', fecha_estimada_cosecha);
+            localStorage.setItem('split_selected_field', field);
+
+            console.log("Field: " + field + " original harv date: " + fecha_estimada_cosecha);
+
+            var day1 = new Date(fecha_estimada_cosecha.replace( /(\d{4})-(\d{2})-(\d{2})/, "$2/$3/$1"));
+            var day2 = new Date(fecha_estimada_cosecha.replace( /(\d{4})-(\d{2})-(\d{2})/, "$2/$3/$1"));
+            day2.setDate(day2.getDate() + 1);
+            var txt_day1 = getFormattedDate(day1);
+            var txt_day2 = getFormattedDate(day2);
+
+            $('#input_modal_split_field_name').val(field);
+            
+            // $('#input_modal_split_field_date1').val(harv_date_split[2] + "/" + harv_date_split[1] + "/" + harv_date_split[0]);
+            // $('#input_modal_split_field_date2').val(harv_date_split[2] + "/" + harv_date_split[1] + "/" + harv_date_split[0]);
+            $('#input_modal_split_field_date1').val(txt_day1);
+            $('#input_modal_split_field_date2').val(txt_day2);
+            
+
+            
+            $('input[name="input_modal_split_field_date1"]').datepicker(options);
+            $('input[name="input_modal_split_field_date2"]').datepicker(options);
+            $('#input_modal_split_total_trucks').val(camiones);
+
+            var camiones1 = Math.round(camiones/2);
+            var camiones2 = camiones - camiones1;
+            $('#input_modal_split_camiones1').val(camiones1);
+            $('#input_modal_split_camiones2').val(camiones2);
+
+
+        } else if (arrayLength > 1){
+            alert("Please select only one field at a time.");
+
+            $(function () {
+                $('#modal-split-field').modal('toggle');
+            });
+
+        } else if (arrayLength == 0){
+            alert("No field selected! Please select one field to split.");
+
+            $(function () {
+                $('#modal-split-field').modal('toggle');
+            });
+        } else {
+            alert("Invalid number of fields selected");
+            
+            $(function () {
+                $('#modal-split-field').modal('toggle');
+            });
+        }
+    }
+
+    //-----------------------------------------------------------------------------------------------------//
+    //-----------------------------------------------------------------------------------------------------//
+    //-----------------------------------------------------------------------------------------------------//
+    function onRemoveField()
+    {
+        var selectedRows = fields_date_table.getSelectedRows();
+        var selected_harv_date = $('#span_harv_date').html();
+        var user_id = $('#user_id').html();
+        var arrayLength = selectedRows.length;
+        for (var i = 0; i < arrayLength; i++) {
+            var data = selectedRows[i]._row.data;
+            var field = data.field;
+            var harvest_plan_date = localStorage.getItem('harv_plan_date');
+            var trucks = data.trucks;
+            var area = data.area;
+            var ton_rw = data.ton_rw;
+
+            // We must instruct users to change this date first in the table
+            var field_harv_date = localStorage.getItem(field); // original harvest date.
+            console.log("harvest_plan_date: " + harvest_plan_date);
+            console.log("field_harv_date: " + field_harv_date);
+            console.log("selected_harv_date: " + selected_harv_date);
+
+            if(harvest_plan_date != field_harv_date)// && harvest_plan_date != selected_harv_date) 
+            {
+                // Update harvest dates in the database;
+                var dataString = "field=" + field + "&harvest_plan_date=" + harvest_plan_date;
+                dataString += "&field_harv_date=" + field_harv_date;
+                dataString += "&trucks=" + trucks;
+                dataString += "&area=" + area;
+                dataString += "&ton_rw=" + ton_rw;
+                console.log(dataString);
+                $.ajax(
+                {
+                    type: "POST",
+                    url: "/ajax-update-harvest-plan-date",
+                    data: dataString,
+                    crossDomain: true,
+                    cache: false,
+                    beforeSend: function () { },
+                    success: function (data) {
+                        // Reload data of table with fields
+                        // populate fields date table 
+                        dates_table.replaceData()
+                        .then(function(){
+                            //run code after table has been successfuly updated
+                            var url1 = "/harv-plan-fields-date?date=" + selected_harv_date;
+                            fields_date_table.setData(url1);
+                            report_table.setData(url1);
+
+                            var url2 = "/harv-plan-all-fields?date=" + selected_harv_date;
+                            all_fields_table.setData(url2);
+                        })
+                        .catch(function(error){
+                            //handle error loading data
+                        });
+                     },
+                    error: function (jqXHR, exception) {
+                        var msg = '';
+                        if (jqXHR.status === 0) {
+                            msg = 'Not connected.\n Please check network connection.';
+                        } else if (jqXHR.status == 404) {
+                            msg = 'Page not found. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msg = 'Internal server error [500].';
+                        } else if (exception === 'parsererror') {
+                            msg = 'Error when trying to process the answer (JSON).';
+                        } else if (exception === 'timeout') {
+                            msg = 'Time limit exceeded.';
+                        } else if (exception === 'abort') {
+                            msg = 'Ajax request was aborted.';
+                        } else {
+                            msg = 'Unknown error.\n' + jqXHR.responseText;
+                        }
+                        alert(msg);
+                    }
+                });
+
+            } else {
+                alert("Field " + field + " cannot be removed since the harvest date is the same. \nPlease select a new date for the field.");
+            }
+            
+        }
+    }
+
+    //-----------------------------------------------------------------------------------------------------//
+    //-----------------------------------------------------------------------------------------------------//
+    //-----------------------------------------------------------------------------------------------------//
+    function onModalAddAction()
+    {
+        var selectedRows = modal_all_fields.getSelectedRows(); //get array of currently selected row components.
+        var harvest_plan_date = $('#span_harv_date').html();
+        var user_id = $('#user_id').html();
+        console.log(selectedRows);
+
+        var arrayLength = selectedRows.length;
+        for (var i = 0; i < arrayLength; i++) {
+            var data = selectedRows[i]._row.data;
+            var field = data.field;
+            var field_harv_date = data.harv_date;
+            
+            // Update harvest dates in the database;
+            var dataString = "harvest_plan_date=" + harvest_plan_date + "&field=" + field;
+            dataString += "&field_harv_date=" + field_harv_date;
+            console.log("onModalAddAction :: dataString: " + dataString);
+            $.ajax(
+            {
+                type: "POST",
+                url: "/ajax-add-to-harvest-plan",
+                data: dataString,
+                crossDomain: true,
+                cache: false,
+                beforeSend: function () { },
+                success: function (data) {
+                    // Reload data of table with fields
+                    // populate fields date table 
+                    dates_table.replaceData()
+                    .then(function(){
+                        fields_date_table.replaceData();
+                    })
+                    .then(function(){
+                            report_table.replaceData();
+                    })
+                    .then(function(){
+                            all_fields_table.replaceData();
+                    })
+                    .catch(function(error){
+                        //handle error loading data
+                    });
+                 },
+                error: function (jqXHR, exception) {
+                    var msg = '';
+                    if (jqXHR.status === 0) {
+                        msg = 'Not connected.\n Please check network connection.';
+                    } else if (jqXHR.status == 404) {
+                        msg = 'Page not found. [404]';
+                    } else if (jqXHR.status == 500) {
+                        msg = 'Internal server error [500].';
+                    } else if (exception === 'parsererror') {
+                        msg = 'Error when trying to process the answer (JSON).';
+                    } else if (exception === 'timeout') {
+                        msg = 'Time limit exceeded.';
+                    } else if (exception === 'abort') {
+                        msg = 'Ajax request was aborted.';
+                    } else {
+                        msg = 'Unknown error.\n' + jqXHR.responseText;
+                    }
+                    alert(msg);
+                }
+            });
+        }
+
+    }
+    
+    //-----------------------------------------------------------------------------------------------------//
+    //-----------------------------------------------------------------------------------------------------//
+    //-----------------------------------------------------------------------------------------------------//
+
+    function onModalAdd()
+    {
+        var selected_harv_date = $('#span_harv_date').html();
+        var comments = $('textarea#comments').val();
+        console.log(selected_harv_date + "\n" + comments);
+
+        console.log("Modal add clicked!\n");
+    }
+
+    var modal_all_fields = new Tabulator("#modal-all-fields", {
+        height:"500px",
+        layout:"fitDataStretch",
+        selectable:4,
+        ajaxURL:"/harv-plan-fields-modal",
+        placeholder:"No Data Set",
+
+        tooltips:function (cell) {
+            let data = cell.getRow();
+            return "HOM: " + data._row.data.hom_harv_date + " (" + data._row.data.hom_moisture + "%)";
+        },
+        tooltipGenerationMode:"hover",
+        
+        columns:[
+            {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, cellClick:function(e, cell){
+                cell.getRow().toggleSelect();
+            }},
+
+            {title:"Harv.Date", field:"harv_date", headerFilter:"input", formatter:"datetime", sorter:"date", formatterParams:{
+                inputFormat:"YYYY-MM-DD",
+                outputFormat:"DD/MM/YY",
+                invalidPlaceholder:"(invalid date)",
+            }},
+            {title:"Picker", field:"picker", headerFilter:"input", sorter:"text", bottomCalc:distinctCalc},
+            {title:"Grower", field:"grower", headerFilter:"input", sorter:"text", bottomCalc:distinctCalc},
+            {title:"Field", field:"field", headerFilter:"input", sorter:"text", bottomCalc:distinctCalc},
+            {title:"Hybrid", field:"hybrid", headerFilter:"input", sorter:"text", bottomCalc:distinctCalc},
+            {title:"Trucks", field:"trucks", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", headerFilter:"number"},
+            {title:"Trucks Assigned", field:"trucks_assigned", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">="},
+            {title:"Area", field:"area", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", sorter:"number", bottomCalc:"sum"},
+            {title:"TON.RW", field:"ton_rw", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", sorter:"number", bottomCalc:"sum"},
+            {title:"Harvest Time", field:"harvest_time", headerFilter:"input", sorter:"number" },
+            {title:"Comments", field:"comments", headerFilter:"input", sorter:"text"},
+            {title:"HOM Harv.Date", field:"hom_harv_date", headerFilter:"input", sorter:"text"},
+            {title:"HOM Moisture", field:"hom_moisture", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", sorter:"number"},
+        ],
+        rowClick:function(e, row) {
+            var h = row.getData();
+            console.log(h);
+
+        },
+    });
+
+    /***************************************************************************/
+
+    /***************************************************************************/
+    var distinctCalc = function(values, data, calcParams) {
+        //values - array of column values
+        //data - all table data
+        //calcParams - params passed from the column definition object
+
+        var calc = 0;
+        const map1 = new Map();
+
+        values.forEach(function(value){
+            map1.set(value, 1);
+        });
+
+        calc = map1.size;
+        return calc;
+    };
+
+
+    /***************************************************************************/
+    document.getElementById("btn_comments").addEventListener("click", onUpdateComments, false);
+
+    function onUpdateComments()
+    {
+        console.log("Button \"Comments\" clicked!!");
+        var selected_harv_date = $('#span_harv_date').html();
+        var comments = $('textarea#comments').val();
+        console.log(selected_harv_date + "\n" + comments);
+
+        var dataString = "harv_date=" + selected_harv_date + "&comments=" + comments;
+        console.log(dataString);
+
+        /* Try to save the change in the database */
+        $.ajax(
+        {
+            type: "POST",
+            url: "/ajax-update-comments",
+            data: dataString,
+            crossDomain: true,
+            cache: false,
+            beforeSend: function () { },
+            success: function (data) { 
+                fields_date_table.replaceData()
+                .then(function(){
+                    report_table.replaceData();
+                })
+                .catch(function(error){
+                    //handle error loading data
+                });
+            },
+            error: function (jqXHR, exception) {
+                var msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connected.\n Please check network connection.';
+                } else if (jqXHR.status == 404) {
+                    msg = 'Page not found. [404]';
+                } else if (jqXHR.status == 500) {
+                    msg = 'Internal server error [500].';
+                } else if (exception === 'parsererror') {
+                    msg = 'Error when trying to process the answer (JSON).';
+                } else if (exception === 'timeout') {
+                    msg = 'Time limit exceeded.';
+                } else if (exception === 'abort') {
+                    msg = 'Ajax request was aborted.';
+                } else {
+                    msg = 'Unknown error.\n' + jqXHR.responseText;
+                }
+                alert(msg);
+            }
+        });
+
+        ///////////////////////////////////////////////////////////////////////////
+        var url_report = "/ajax-report?date=" + selected_harv_date;
+        // url_report += "&total_zones=" + total_zones;
+        // url_report += "&total_fields=" + total_fields;
+        // url_report += "&total_hybrids=" + total_hybrids;
+        // url_report += "&total_trucks=" + total_trucks;
+        // url_report += "&total_area=" + total_area;
+        // url_report += "&total_rw=" + total_rw;
+
+        var request_report = $.ajax({
+            type: "GET",
+            url: url_report,
+            crossDomain: true,
+            cache: false,
+            beforeSend: function () {  }
+        });
+
+        request_report.done(function (msg) {
+            $("#report").html(msg);
+        });
+
+        request_report.fail(function (jqXHR, textStatus) {
+            alert("Failed to get data about trucks unloaded: " + textStatus);
+        });
+        ///////////////////////////////////////////////////////////////////////////
+
+        
+
+
+    }
+    /***************************************************************************/
+
+    document.getElementById("generate_pdf").addEventListener("click", onGeneratePDF, false);
+
+    // See: http://tabulator.info/examples/4.9#ajax
+
+    function getFormattedDate(date)
+    {
+        var year = date.getFullYear();
+        var month = (1 + date.getMonth()).toString();
+        month = month.length > 1 ? month : '0' + month;
+        var day = date.getDate().toString();
+        day = day.length > 1 ? day : '0' + day;
+        // return month + '/' + day + '/' + year;
+        return day + '/' + month + '/' + year;
+    }
+
+    /***************************************************************************/
+    var all_fields_table = new Tabulator("#all-fields-table", {
+        // autoColumns: true,
+        // movableColumns: true,
+        movableRows: true, //enable movable rows
+        movableRowsConnectedTables: "#fields-date-table", //connect to this table
+
+        height:"311px",
+        selectable:1,
+        // layout:"fitColumns",
+        // ajaxURL:"/harv-plan-all-fields",
+        paginationSize:20,
+        placeholder:"No Data Set",
+        columns:[
+            {title:"Field", field:"Field", sorter:"text", bottomCalc:distinctCalc},
+            {title:"Picker", field:"Picker", sorter:"text", bottomCalc:distinctCalc},
+            {title:"Area", field:"Area", sorter:"number", bottomCalc:"sum"},
+            {title:"Hybrid", field:"Hybrid", sorter:"text", bottomCalc:distinctCalc},
+            {title:"TonRW", field:"TonRW", sorter:"number", bottomCalc:"sum"},
+            {title:"Day_01", field:"Day_01", sorter:"number", bottomCalc:"sum"},
+            {title:"Day_02", field:"Day_02", sorter:"number", bottomCalc:"sum"},
+            {title:"Day_03", field:"Day_03", sorter:"number", bottomCalc:"sum"},
+            {title:"Day_04", field:"Day_04", sorter:"number", bottomCalc:"sum"},
+
+        ],
+    });
+
+    /*****************************************************************************/
+    /*****************************************************************************/
+    /*****************************************************************************/
+
+    function onGeneratePDF() {
+        report_table.replaceData();
+        var harv_date = $('#span_harv_date').html();
+        var harv_date_array = harv_date.split("-");
+        var year = harv_date_array[0];
+        var month = harv_date_array[1];
+        var day = harv_date_array[2];
+        var filename = "HarvestPlan_" + day + month + year + ".pdf";
+
+        
+        var element = document.getElementById('report-all');
+        var opt = {
+        // margin:       1,
+        filename:     filename,
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'A4', orientation: 'landscape' }
+        };
+
+        // New Promise-based usage:
+        html2pdf().set(opt).from(element).save();
+    }
+
+    /*****************************************************************************/
+    /*****************************************************************************/
+    /*****************************************************************************/
+    /*****************************************************************************/
+    var commentsEditor = function(cell, onRendered, success, cancel) {
+        //cell - the cell component for the editable cell
+        //onRendered - function to call when the editor has been rendered
+        //success - function to call to pass the successfuly updated value to Tabulator
+        //cancel - function to call to abort the edit and return to a normal cell
+
+        //create and style input
+        var cellValue = cell.getValue(),
+        input = document.createElement("input");
+
+
+        input.setAttribute("type", "input");
+
+        input.style.padding = "4px";
+        input.style.width = "100%";
+        input.style.boxSizing = "border-box";
+
+        input.value = cellValue;
+
+        function onChange() {
+            var h = cell.getRow().getData();
+            var field = h['field'];
+            var selected_harv_date = $('#span_harv_date').html();
+            console.log("commentsEditor :: selected_harv_date = " + selected_harv_date);
+
+            
+            if(input.value != cellValue) {
+
+                // "success" command below is needed to remove focus from the cell.
+                success(input.value);
+
+                var dataString = "field=" + field + "&comments=" + input.value + "&harv_date=" + selected_harv_date;
+
+                /* Try to save the change in the database */
+                $.ajax(
+                {
+                    type: "POST",
+                    url: "/ajax-update-field-comments",
+                    data: dataString,
+                    crossDomain: true,
+                    cache: false,
+                    beforeSend: function () { },
+                    success: function (data) {
+                        report_table.replaceData()
+                        .then(function(){
+                            onSavePlan();
+                        })
+                        .catch(function(error){
+                            //handle error loading data
+                        });
+                
+                     },
+                    error: function (jqXHR, exception) {
+                        var msg = '';
+                        if (jqXHR.status === 0) {
+                            msg = 'Not connected.\n Please check network connection.';
+                        } else if (jqXHR.status == 404) {
+                            msg = 'Page not found. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msg = 'Internal server error [500].';
+                        } else if (exception === 'parsererror') {
+                            msg = 'Error when trying to process the answer (JSON).';
+                        } else if (exception === 'timeout') {
+                            msg = 'Time limit exceeded.';
+                        } else if (exception === 'abort') {
+                            msg = 'Ajax request was aborted.';
+                        } else {
+                            msg = 'Unknown error.\n' + jqXHR.responseText;
+                        }
+                        alert(msg);
+                    }
+                });
+
+            } else {
+                cancel();
+            }
+        }
+
+        onRendered(function(){
+            input.focus();
+            input.style.height = "100%";
+        });
+
+        //submit new value on blur or change
+        // input.addEventListener("blur", onChange);
+
+        //submit new value on enter
+        input.addEventListener("keydown", function(e){
+            if(e.keyCode == 13){
+                onChange();
+            }
+
+            if(e.keyCode == 27){
+                cancel();
+            }
+        });
+
+        return input;
+    };
+    /*****************************************************************************/
+    var trucksEditor = function(cell, onRendered, success, cancel) {
+        //cell - the cell component for the editable cell
+        //onRendered - function to call when the editor has been rendered
+        //success - function to call to pass the successfuly updated value to Tabulator
+        //cancel - function to call to abort the edit and return to a normal cell
+
+        //create and style input
+        var cellValue = cell.getValue(),
+        input = document.createElement("input");
+
+        input.setAttribute("type", "number");
+
+        input.style.padding = "4px";
+        input.style.width = "100%";
+        input.style.boxSizing = "border-box";
+
+        input.value = cellValue;
+
+        function onChange() {
+            var h = cell.getRow().getData();
+            var field = h['field'];
+            
+            if(input.value != cellValue){
+
+                // "success" command below is needed to remove focus from the cell.
+                success(input.value);
+                var selected_harv_date = $('#span_harv_date').html();
+                var dataString = "field=" + field + "&trucks=" + input.value + "&harvest_plan_date=" + selected_harv_date;
+
+                /* Try to save the change in the database */
+                $.ajax(
+                {
+                    type: "POST",
+                    url: "/ajax-update-trucks",
+                    data: dataString,
+                    crossDomain: true,
+                    cache: false,
+                    beforeSend: function () { },
+                    success: function (data) {
+                        report_table.replaceData()
+                        .then(function(){
+                            onSavePlan();
+                        })
+                        .catch(function(error){
+                            //handle error loading data
+                        });
+                     },
+                    error: function (jqXHR, exception) {
+                        var msg = '';
+                        if (jqXHR.status === 0) {
+                            msg = 'Not connected.\n Please check network connection.';
+                        } else if (jqXHR.status == 404) {
+                            msg = 'Page not found. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msg = 'Internal server error [500].';
+                        } else if (exception === 'parsererror') {
+                            msg = 'Error when trying to process the answer (JSON).';
+                        } else if (exception === 'timeout') {
+                            msg = 'Time limit exceeded.';
+                        } else if (exception === 'abort') {
+                            msg = 'Ajax request was aborted.';
+                        } else {
+                            msg = 'Unknown error.\n' + jqXHR.responseText;
+                        }
+                        alert(msg);
+                    }
+                });
+                
+                fields_date_table.replaceData();
+
+                report_table.replaceData();
+
+                report_table.replaceData();
+
+            }else{
+                cancel();
+            }
+        }
+
+        onRendered(function(){
+            input.focus();
+            input.style.height = "100%";
+        });
+
+        //submit new value on blur or change
+        // input.addEventListener("blur", onChange);
+
+        //submit new value on enter
+        input.addEventListener("keydown", function(e){
+            if(e.keyCode == 13){
+                onChange();
+            }
+
+            if(e.keyCode == 27){
+                cancel();
+            }
+        });
+
+        return input;
+    };
+    /*****************************************************************************/
+    /*****************************************************************************/
+    /*****************************************************************************/
+    /*****************************************************************************/
+    /*****************************************************************************/
+    var trucksAssignedEditor = function(cell, onRendered, success, cancel) {
+        //cell - the cell component for the editable cell
+        //onRendered - function to call when the editor has been rendered
+        //success - function to call to pass the successfuly updated value to Tabulator
+        //cancel - function to call to abort the edit and return to a normal cell
+
+        //create and style input
+        var cellValue = cell.getValue(),
+        input = document.createElement("input");
+
+        input.setAttribute("type", "number");
+
+        input.style.padding = "4px";
+        input.style.width = "100%";
+        input.style.boxSizing = "border-box";
+
+        input.value = cellValue;
+
+        function onChange() {
+            var h = cell.getRow().getData();
+            var field = h['field'];
+            var total_trucks = h['trucks'];
+            var reload = false;
+            
+            if(input.value != cellValue){
+
+                // "success" command below is needed to remove focus from the cell.
+                success(input.value);
+                if(input.value > total_trucks) {
+                    input.value = total_trucks;
+                    cell.setValue(total_trucks, true);
+                    // reload = true;
+                }
+
+                var selected_harv_date = $('#span_harv_date').html();
+                var dataString = "field=" + field + "&trucks_assigned=" + input.value + "&harvest_plan_date=" + selected_harv_date;
+                console.log(dataString);
+
+                /* Try to save the change in the database */
+                $.ajax(
+                {
+                    type: "POST",
+                    url: "/ajax-update-trucks-assigned",
+                    data: dataString,
+                    crossDomain: true,
+                    cache: false,
+                    beforeSend: function () { },
+                    success: function (data) {
+                        report_table.replaceData()
+                        .then(function(){
+                            onSavePlan();
+                        })
+                        .catch(function(error){
+                            //handle error loading data
+                        });
+                     },
+                    error: function (jqXHR, exception) {
+                        var msg = '';
+                        if (jqXHR.status === 0) {
+                            msg = 'Not connected.\n Please check network connection.';
+                        } else if (jqXHR.status == 404) {
+                            msg = 'Page not found. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msg = 'Internal server error [500].';
+                        } else if (exception === 'parsererror') {
+                            msg = 'Error when trying to process the answer (JSON).';
+                        } else if (exception === 'timeout') {
+                            msg = 'Time limit exceeded.';
+                        } else if (exception === 'abort') {
+                            msg = 'Ajax request was aborted.';
+                        } else {
+                            msg = 'Unknown error.\n' + jqXHR.responseText;
+                        }
+                        alert(msg);
+                    }
+                });
+
+                if(reload) {
+                    fields_date_table.replaceData();
+                }
+
+                report_table.replaceData();
+
+                report_table.replaceData();
+
+            }else{
+                cancel();
+            }
+        }
+
+        onRendered(function(){
+            input.focus();
+            input.style.height = "100%";
+        });
+
+        //submit new value on blur or change
+        // input.addEventListener("blur", onChange);
+
+        //submit new value on enter
+        input.addEventListener("keydown", function(e){
+            if(e.keyCode == 13){
+                onChange();
+            }
+
+            if(e.keyCode == 27){
+                cancel();
+            }
+        });
+
+        return input;
+    };
+    /*****************************************************************************/
+    /*****************************************************************************/
+    /*****************************************************************************/
+    /*****************************************************************************/
+    /*****************************************************************************/
+    var harvestTimeEditor = function(cell, onRendered, success, cancel) {
+        //cell - the cell component for the editable cell
+        //onRendered - function to call when the editor has been rendered
+        //success - function to call to pass the successfuly updated value to Tabulator
+        //cancel - function to call to abort the edit and return to a normal cell
+
+        //create and style input
+        var cellValue = moment(cell.getValue(), "HH:mm:ss").format("HH:mm"),
+        input = document.createElement("input");
+
+        input.setAttribute("type", "datetime");
+
+        input.style.padding = "4px";
+        input.style.width = "100%";
+        input.style.boxSizing = "border-box";
+
+        input.value = cellValue;
+
+        function onChange() {
+            var h = cell.getRow().getData();
+            var field = h['field'];
+            var harv_time = h['harvest_time'];
+            var reload = false;
+
+            if(input.value .match(/^\d{2,}:\d{2}$/)) {
+
+                // "success" command below is needed to remove focus from the cell.
+                success(input.value);
+                var val = input.value + ":00";
+                var selected_harv_date = $('#span_harv_date').html();
+                var dataString = "field=" + field + "&harv_time=" + input.value + "&harv_date=" + selected_harv_date;
+
+                /* Try to save the change in the database */
+                $.ajax(
+                {
+                    type: "POST",
+                    url: "/ajax-update-harv-time",
+                    data: dataString,
+                    crossDomain: true,
+                    cache: false,
+                    beforeSend: function () { },
+                    success: function (data) {
+                        report_table.replaceData()
+                        .then(function(){
+                            onSavePlan();
+                        })
+                        .catch(function(error){
+                            //handle error loading data
+                        });
+                     },
+                    error: function (jqXHR, exception) {
+                        var msg = '';
+                        if (jqXHR.status === 0) {
+                            msg = 'Not connected.\n Please check network connection.';
+                        } else if (jqXHR.status == 404) {
+                            msg = 'Page not found. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msg = 'Internal server error [500].';
+                        } else if (exception === 'parsererror') {
+                            msg = 'Error when trying to process the answer (JSON).';
+                        } else if (exception === 'timeout') {
+                            msg = 'Time limit exceeded.';
+                        } else if (exception === 'abort') {
+                            msg = 'Ajax request was aborted.';
+                        } else {
+                            msg = 'Unknown error.\n' + jqXHR.responseText;
+                        }
+                        alert(msg);
+                    }
+                });
+
+                if(reload) {
+                    fields_date_table.replaceData();
+                }
+
+                report_table.replaceData();
+
+            } else {
+                cancel();
+            }
+        }
+
+        onRendered(function(){
+            input.focus();
+            input.style.height = "100%";
+        });
+
+        //submit new value on blur or change
+        // input.addEventListener("blur", onChange);
+
+        //submit new value on enter
+        input.addEventListener("keydown", function(e){
+            if(e.keyCode == 13){
+                onChange();
+            }
+
+            if(e.keyCode == 27){
+                cancel();
+            }
+        });
+
+        return input;
+    };
+    /*****************************************************************************/
+
+    //Create Date Editor
+    var dateEditor = function(cell, onRendered, success, cancel){
+        //cell - the cell component for the editable cell
+        //onRendered - function to call when the editor has been rendered
+        //success - function to call to pass the successfuly updated value to Tabulator
+        //cancel - function to call to abort the edit and return to a normal cell
+
+        //create and style input
+        // var cellValue = moment(cell.getValue(), "DD/MM/YYYY").format("YYYY-MM-DD"),
+        var cellValue = moment(cell.getValue()).format("YYYY-MM-DD"),
+        input = document.createElement("input");
+
+        input.setAttribute("type", "date");
+        input.style.padding = "4px";
+        input.style.width = "100%";
+        input.style.boxSizing = "border-box";
+
+        input.value = cellValue;
+        var field = cell.getRow().getData().field;
+        var stored_value = localStorage.getItem(field);
+
+        onRendered(function(){
+            input.focus();
+            input.style.height = "100%";
+        });
+
+        function onChange() {
+            var harvest_plan_date = moment(localStorage.getItem("harv_plan_date")).format("YYYY-MM-DD");
+            console.log("harvest_plan_date = " + harvest_plan_date + "  input.value = " + input.value);
+            if(input.value) {
+                // success(moment(input.value, "YYYY-MM-DD").format("YYYY-MM-DD"));
+                console.log("they are different");
+                $("#btn_remove_field").show();
+
+                var dataString = "field=" + field + "&harvest_plan_date=" + harvest_plan_date + "&harv_date=" + input.value;
+                console.log(dataString);
+                /* Try to save the change in the database */
+                $.ajax(
+                {
+                    type: "POST",
+                    url: "/ajax-update-harv-date",
+                    data: dataString,
+                    crossDomain: true,
+                    cache: false,
+                    beforeSend: function () { },
+                    success: function (data) {
+                        cell.setValue(input.value);
+                        localStorage.setItem(field,input.value);
+                        report_table.replaceData()
+                        
+                        .then(function(){
+                            onSavePlan();
+                        })
+                        .catch(function(error){
+                            //handle error loading data
+                        });
+                    },
+                    error: function (jqXHR, exception) {
+                        var msg = '';
+                        if (jqXHR.status === 0) {
+                            msg = 'Not connected.\n Please check network connection.';
+                        } else if (jqXHR.status == 404) {
+                            msg = 'Page not found. [404]';
+                        } else if (jqXHR.status == 500) {
+                            msg = 'Internal server error [500].';
+                        } else if (exception === 'parsererror') {
+                            msg = 'Error when trying to process the answer (JSON).';
+                        } else if (exception === 'timeout') {
+                            msg = 'Time limit exceeded.';
+                        } else if (exception === 'abort') {
+                            msg = 'Ajax request was aborted.';
+                        } else {
+                            msg = 'Unknown error.\n' + jqXHR.responseText;
+                        }
+                        alert(msg);
+                    }
+                });
+                    
+                
+            } else {
+                success(moment(stored_value, "YYYY-MM-DD").format("YYYY-MM-DD"));
+            }
+        }
+
+        //submit new value on blur or change
+        input.addEventListener("blur", onChange);
+
+        //submit new value on enter
+        input.addEventListener("keydown", function(e){
+            if(e.keyCode == 13){
+                onChange();
+            }
+
+            if(e.keyCode == 27){
+                cancel();
+            }
+        });
+
+        return input;
+    };
+
+    /*****************************************************************************/
+    /*****************************************************************************/
+    /*****************************************************************************/
+    /*****************************************************************************/
+    /*****************************************************************************/
+
+    var fields_date_table = new Tabulator("#fields-date-table", {
+        movableRows: true, //enable movable rows
+        selectable:1,
+        height:"311px",
+        tooltips:true,
+        paginationSize:20,
+        placeholder:"No Data Set",
+        tooltips:function (cell) {
+            let data = cell.getRow();
+            return "HOM: " + data._row.data.hom_harv_date + " (" + data._row.data.hom_moisture + "%)";
+        },
+        tooltipGenerationMode:"hover",
+
+        columns:[
+            {formatter:"rowSelection", titleFormatter:"rowSelection", hozAlign:"center", headerSort:false, cellClick:function(e, cell){
+                cell.getRow().toggleSelect();
+            }},
+            // From possible user change
+            {title:"Harv.Date", field:"harv_date", formatter:"datetime", editor:dateEditor, sorter:"date", formatterParams:{
+                inputFormat:"YYYY-MM-DD",
+                outputFormat:"DD/MM/YY",
+                invalidPlaceholder:"(invalid date)",
+            }},
+            {title:"Picker", field:"picker", sorter:"text", bottomCalc:distinctCalc},
+            {title:"PFO Name", field:"grower", sorter:"text", bottomCalc:distinctCalc},
+            {title:"Field", field:"field", sorter:"text", bottomCalc:distinctCalc},
+            {title:"Hybrid", field:"hybrid", sorter:"text", bottomCalc:distinctCalc},
+            
+            // {title:"Trucks", field:"camiones", sorter:"number", bottomCalc:"sum"},
+            {title:"Trucks", field:"trucks", editor:trucksEditor, editorParams:{ 
+                min:0, 
+                max: 100, 
+                step:1, 
+                elementAttributes:{ maxlength:"10", }, 
+                verticalNavigation:"table", }, sorter:"number", bottomCalc:"sum", formatter:function(cell) {
+                cell.getElement().style.backgroundColor = "#ADD8E6";
+                return '<span style=color:blue>' + cell.getRow().getData().trucks + '</span>';
+            }},
+            
+            
+            {title:"Trucks Assigned", field:"trucks_assigned", editor:trucksAssignedEditor, editorParams:{ 
+                min:0, 
+                max: 100, 
+                step:1, 
+                elementAttributes:{ maxlength:"10", }, 
+                verticalNavigation:"table", }, sorter:"number", bottomCalc:"sum", formatter:function(cell) {
+                cell.getElement().style.backgroundColor = "#FFF9C4";
+                return '<span style=color:blue>' + cell.getRow().getData().trucks_assigned + '</span>';
+            }},
+            {title:"Area", field:"area", sorter:"number", formatter:"money", bottomCalc:"sum"},
+            {title:"TON.RW", field:"ton_rw", sorter:"number", formatter:"money", bottomCalc:"sum"},
+            {title:"Harvest Time", field:"harvest_time", sorter:"number", editor:harvestTimeEditor,
+            formatter:"datetime", formatterParams:{
+                inputFormat:"HH:mm:ss", 
+                outputFormat:"HH:mm", 
+                invalidPlaceholder:"Invalid Time"
+                }
+            },
+            {title:"Comments", field:"comments", sorter:"text", editor:commentsEditor},
+            {title:"HOM Harv.Date", field:"hom_harv_date", visible:false},
+            {title:"HOM Moisture", field:"hom_moisture", visible:false},
+        ],
+        
+    });
+
+    /*****************************************************************************/
+    /*****************************************************************************/
+    /*****************************************************************************/
+    /*****************************************************************************/
+    /*****************************************************************************/
+
+    
+    var report_table = new Tabulator("#report-table", {
+        height:"311px",
+        selectable:1,
+        paginationSize:20,
+        textSize:10,
+        movableRows:true,
+        placeholder:"No Data Set",
+        columns:[
+            // From possible user change
+            
+            {title:"Picker", field:"picker", sorter:"text", bottomCalc:distinctCalc},
+            {title:"Grower", field:"grower", sorter:"text", bottomCalc:distinctCalc},
+            {title:"Field", field:"field", sorter:"text", bottomCalc:distinctCalc},
+            {title:"Hybrid", field:"hybrid", sorter:"text", bottomCalc:distinctCalc},
+            
+            // {title:"Trucks", field:"camiones", sorter:"number", bottomCalc:"sum"},
+            {title:"Trucks", field:"trucks", editor:trucksEditor, editorParams:{ 
+                min:0, 
+                max: 100, 
+                step:1, 
+                elementAttributes:{ maxlength:"10", }, 
+                verticalNavigation:"table", }, sorter:"number", bottomCalc:"sum", formatter:function(cell) {
+                cell.getElement().style.backgroundColor = "#ADD8E6";
+                return '<span style=color:blue>' + cell.getRow().getData().trucks + '</span>';
+            }},
+            {title:"Trucks Assigned", field:"trucks_assigned", editor:trucksAssignedEditor, editorParams:{ 
+                min:0, 
+                max: 100, 
+                step:1, 
+                elementAttributes:{ maxlength:"10", }, 
+                verticalNavigation:"table", }, sorter:"number", bottomCalc:"sum", formatter:function(cell) {
+                cell.getElement().style.backgroundColor = "#FFF9C4";
+                return '<span style=color:blue>' + cell.getRow().getData().trucks_assigned + '</span>';
+            }},
+            {title:"Area", field:"area", sorter:"number", formatter:"money", bottomCalc:"sum"},
+            {title:"TON.RW", field:"ton_rw", sorter:"number", formatter:"money", bottomCalc:"sum"},
+            {title:"Harv.Date", field:"harv_date", formatter:"datetime", editor:dateEditor, sorter:"date", formatterParams:{
+                inputFormat:"YYYY-MM-DD",
+                outputFormat:"DD/MM/YY",
+                invalidPlaceholder:"(invalid date)",
+            }},
+            {title:"Harvest Time", field:"harvest_time", sorter:"number", editor:harvestTimeEditor,
+            formatter:"datetime", formatterParams:{
+                inputFormat:"HH:mm:ss", 
+                outputFormat:"HH:mm", 
+                invalidPlaceholder:"Invalid Time"
+                }
+            },
+            {title:"Comments", field:"comments", sorter:"text", editor:commentsEditor},
+        ],
+        
+    });
+
+    /***************************************************************************/
+    function get_comments(harv_date)
+    {
+        /* Try to save the change in the database */
+        var dataString = "harv_date=" + harv_date;
+        $.ajax(
+        {
+            type: "GET",
+            url: "/ajax-get-comments",
+            data: dataString,
+            crossDomain: true,
+            cache: false,
+            beforeSend: function () { },
+            success: function (data) { 
+                $('textarea#comments').val(data);
+                report_table.replaceData();
+                /*
+                .then(function(){
+                    report_table.replaceData();
+                })
+                .catch(function(error){
+                    //handle error loading data
+                });
+                */
+            },
+            error: function (jqXHR, exception) {
+                var msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connected.\n Please check network connection.';
+                } else if (jqXHR.status == 404) {
+                    msg = 'Page not found. [404]';
+                } else if (jqXHR.status == 500) {
+                    msg = 'Internal server error [500].';
+                } else if (exception === 'parsererror') {
+                    msg = 'Error when trying to process the answer (JSON).';
+                } else if (exception === 'timeout') {
+                    msg = 'Time limit exceeded.';
+                } else if (exception === 'abort') {
+                    msg = 'Ajax request was aborted.';
+                } else {
+                    msg = 'Unknown error.\n' + jqXHR.responseText;
+                }
+                alert(msg);
+            }
+        });
+    }
+
+
+
+
+
+    var dates_table = new Tabulator("#dates-table", {
+            height:"311px",
+            // layout:"fitColumns",
+            selectable:1,
+            ajaxURL:"/harv-plan-total-per-date",
+            paginationSize:20,
+            placeholder:"No Data Set",
+            columns:[
+                {title:"Date", field:"harv_date", formatter:"datetime", formatterParams:{
+                    inputFormat:"YYYY-MM-DD",
+                    outputFormat:"DD/MM/YY",
+                    invalidPlaceholder:"(invalid date)",
+                }},
+                {title:"Picker Groups", field:"pickers", sorter:"number"},
+                {title:"Fields", field:"fields", sorter:"number"},
+                {title:"Hybrids", field:"hybrids", sorter:"number"},
+                {title:"Trucks", field:"total_trucks", sorter:"number"},
+                {title:"Area", field:"total_area", sorter:"number"},
+                {title:"RW", field:"total_rw", sorter:"number"},
+            ],
+            rowClick:function(e, row){
+                var data = row.getData(); //get data object for row
+                var harv_date = data.harv_date;
+                var total_zones = data.total_zones;
+                var total_fields = data.total_fields;
+                var total_hybrids = data.total_hybrids;
+                var total_trucks = data.total_trucks;
+                var total_area = data.total_area;
+                var total_rw = data.total_rw;
+
+                harv_date = harv_date.substring(0,10);
+                var harv_date_array = harv_date.split("-");
+
+                var day1 = new Date(harv_date.replace( /(\d{4})-(\d{2})-(\d{2})/, "$2/$3/$1"));
+
+                var day2 = new Date(harv_date.replace( /(\d{4})-(\d{2})-(\d{2})/, "$2/$3/$1"));
+                day2.setDate(day2.getDate() + 1);
+
+                var day3 = new Date(harv_date.replace( /(\d{4})-(\d{2})-(\d{2})/, "$2/$3/$1"));
+                day3.setDate(day3.getDate() + 2);
+
+                var day4 = new Date(harv_date.replace( /(\d{4})-(\d{2})-(\d{2})/, "$2/$3/$1"));
+                day4.setDate(day4.getDate() + 3);
+
+                // populate fields date table 
+                var url1 = "/harv-plan-fields-date?date=" + harv_date;
+                fields_date_table.setData(url1);
+                report_table.setData(url1);
+
+                document.getElementById("span_harv_date").textContent = harv_date;
+                $("#btn_modal_add").show();
+                $("#btn_remove_field").show();
+                $("#btn_modal_split").show();
+                $("#btn_save_plan").show();
+
+                // Get comments
+                $('textarea#comments').val("");
+                get_comments(harv_date);
+
+                // populate all fields table 
+                document.getElementById("selected_date").textContent =  "Day_1: " + day1.toISOString().split('T')[0];
+                document.getElementById("selected_date").textContent += ";\tDay_2: " + day2.toISOString().split('T')[0];
+                document.getElementById("selected_date").textContent += ";\tDay_3: " + day3.toISOString().split('T')[0];
+                document.getElementById("selected_date").textContent += ";\tDay_4: " + day4.toISOString().split('T')[0];
+                var url2 = "/harv-plan-all-fields?date=" + harv_date;
+                all_fields_table.setData(url2);
+                
+                all_fields_table.deleteColumn("Day_01");
+                var txt_day1 = getFormattedDate(day1);
+                all_fields_table.addColumn({title:txt_day1, field:"Day_01", sorter:"number", bottomCalc:"sum"});
+
+                all_fields_table.deleteColumn("Day_02");
+                var txt_day2 = getFormattedDate(day2);
+                all_fields_table.addColumn({title:txt_day2, field:"Day_02", sorter:"number", bottomCalc:"sum"});
+
+                all_fields_table.deleteColumn("Day_03");
+                var txt_day3 = getFormattedDate(day3);
+                all_fields_table.addColumn({title:txt_day3, field:"Day_03", sorter:"number", bottomCalc:"sum"});
+
+                all_fields_table.deleteColumn("Day_04");
+                var txt_day4 = getFormattedDate(day4);
+                all_fields_table.addColumn({title:txt_day4, field:"Day_04", sorter:"number", bottomCalc:"sum"});
+                
+            
+
+                ///////////////////////////////////////////////////////////////////////////
+                var url_report = "/ajax-report?date=" + harv_date;
+                url_report += "&total_zones=" + total_zones;
+                url_report += "&total_fields=" + total_fields;
+                url_report += "&total_hybrids=" + total_hybrids;
+                url_report += "&total_trucks=" + total_trucks;
+                url_report += "&total_area=" + total_area;
+                url_report += "&total_rw=" + total_rw;
+
+                var request_report = $.ajax({
+                    type: "GET",
+                    url: url_report,
+                    crossDomain: true,
+                    cache: false,
+                    beforeSend: function () {  }
+                });
+
+                request_report.done(function (msg) {
+                    $("#report").html(msg);
+                });
+
+                request_report.fail(function (jqXHR, textStatus) {
+                    alert("Failed to get data about trucks unloaded: " + textStatus);
+                });
+                ///////////////////////////////////////////////////////////////////////////
+                localStorage.clear();
+                localStorage.setItem("harv_plan_date", harv_date);
+                var url_data_fields_date_table = "/harv-plan-fields-date?date=" + harv_date;
+                var request_data_fields_date_table = $.ajax({
+                    type: "GET",
+                    url: url_data_fields_date_table,
+                    crossDomain: true,
+                    cache: false,
+                    beforeSend: function () {  }
+                });
+
+                request_data_fields_date_table.done(function (json_data) {
+                    var jsonData = JSON.parse(json_data);
+                    for (var i = 0; i < jsonData.length; i++) {
+                        var field_data = jsonData[i];
+                        var field = field_data.field;
+                        var date = field_data.harv_date;
+                        localStorage.setItem(field,date);
+                    }
+                });
+
+                request_data_fields_date_table.fail(function (jqXHR, textStatus) {
+                    alert("Failed to get data about harvest plan: " + textStatus);
+                });
+
+            
+            },
+
+        });
+
+    /***************************************************************************/
+    function initMap() {
+
+    }
+
+    $(document).ready(function(){
+
+        var user_id = getCookie('user_id');
+        $("#user_id").html(user_id);
+        // $("#user_id").html("EVSRO");
+
+        $("#btn_modal_add").hide();
+        $("#btn_remove_field").hide();
+        $("#btn_modal_split").hide();
+        $("#btn_save_plan").hide();
+
+        ///////////////////////////////////////////////////////////////////////////
+
+        var request_qttytrucks_unloaded = $.ajax({
+            type: "GET",
+            url: '/qttytrucks_unloaded',
+            crossDomain: true,
+            cache: false,
+            beforeSend: function () {  }
+        });
+
+        request_qttytrucks_unloaded.done(function (msg) {
+            $("#qttytrucks_unloaded").html(msg);
+        });
+
+        request_qttytrucks_unloaded.fail(function (jqXHR, textStatus) {
+            alert("Failed to get data about trucks unloaded: " + textStatus);
+        });
+        ///////////////////////////////////////////////////////////////////////////
+        var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+        var options={
+            format: 'dd/mm/yyyy',
+            container: container,
+            todayHighlight: true,
+            autoclose: true,
+            minDate: new Date(2022, 1, 1),
+            maxDate: new Date(2022, 7, 31),
+            setDate: new Date(2022, 1, 1)
+            // startDate: '+3d'
+        };
+        $('input[name="input_modal_split_field_date1"]').datepicker(options);
+        
+    })
+
+
+</script>
+<!-- End of file -->
+</body>
+</html>

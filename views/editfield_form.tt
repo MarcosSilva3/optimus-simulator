@@ -1,0 +1,321 @@
+<% INCLUDE incl/header.tt %>
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Edit attributes of a Field</h1>
+                </div>
+            </div>
+                <!-- /.col-lg-12 -->
+            
+            <div class="row">
+                <div class="col-lg-2">
+                    <form>
+                    
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><% formdata.LOT %></div>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label class="control-label" for="date">Field</label>
+                                    <input class="form-control" type="text" name="lot" id="lot" value='<% formdata.lot %>' disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label" for="date">Coordinates</label>
+                                    <input class="form-control" type="text" name="coordinates" id="coordinates" value='<% formdata.coordinates %>' disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label" for="date">Hybrid</label>
+                                    <input class="form-control" type="text" name="hybrid" id="hybrid" value='<% formdata.hybrid %>' disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label" for="date">ABC Classification</label>
+                                    <input class="form-control" type="text" name="abc" id="abc" value='<% formdata.abc %>' disabled>
+                                </div>
+
+                                <div class="form-group has-success"> <!-- Date input -->
+                                    <label class="control-label" for="date">Start harv. date</label>
+                                    <input class="form-control" value='<% formdata.twstart %>' id="twstart" name="twstart" placeholder="YYYY-MM-DD" type="text"/>
+                                </div>
+
+                                <div class="form-group has-success"> <!-- Date input -->
+                                    <label class="control-label" for="date">End harv. date</label>
+                                    <input class="form-control" value='<% formdata.twend %>' id="twend" name="twend" placeholder="YYYY-MM-DD" type="text"/>
+                                </div>
+
+                                <div class="form-group has-error"> <!-- Date input -->
+                                    <label class="control-label" for="date">Actual harvest date</label>
+                                    <input class="form-control" value='<% formdata.harvest_date %>' id="harvest_date" name="harvest_date" placeholder="YYYY-MM-DD" type="text"/>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label" for="date">Area</label>
+                                    <input class="form-control" type="text" name="area" id="area" value='<% formdata.area %>'>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label" for="date">Yield (Ton.RW / ha)</label>
+                                    <input class="form-control" type="text" name="yield_ton_ha" id="yield_ton_ha" value='<% formdata.yield_ton_ha %>'>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label" for="date">Dry down rate / day</label>
+                                    <input class="form-control" type="text" name="drydown_rate" id="drydown_rate" value='<% formdata.drydown_rate %>'>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Picker group</label>
+                                    <select class="form-control" id="picker">
+                                    <% FOREACH picker IN pickers %>
+                                        <option value="<% picker %>" <% 'SELECTED' IF picker == formdata.default_picker %> ><% picker %></option>
+                                    <% END %>
+                                    </select>
+                                </div>
+                                
+                                <input type="button" id="updatefield" value="Update Field" name="updatefield">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-lg-10">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Field in the map
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="map"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+
+                <!-- /.row -->
+                <div class="row">
+                    <div class="col-lg-9">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                Weather Forecast for the next 15 days - Source: <a href="https://www.ibm.com/weather">IBM The Weather Company (TWC)</a>
+                            </div>
+                            <!-- /.panel-heading -->
+                            <div class="panel-body">
+                                <table width="100%" class="table table-striped table-bordered table-hover" id="weather-data">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Day of Week</th>
+                                            <th>Tmin (C)</th>
+                                            <th>TMax (C)</th>
+                                            <th>Precip. Chance (%)</th>
+                                            <th>Precipitation (mm)</th>
+                                            <th>Narrative</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% FOREACH req IN reqs %>
+                                        <tr class="odd gradeX">
+                                            <td><% req.date %></td>
+                                            <td><% req.dow %></td>
+                                            <td><% req.tmin %></td>
+                                            <td><% req.tmax %></td>
+                                            <td><% req.precipitation_chance %></td>
+                                            <td><% req.precipitation %></td>
+                                            <td><% req.narrative %></td>
+                                        </tr>
+                                        <% END %>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- /.panel-body -->
+                        </div>
+                        <!-- /.panel -->
+                    </div>
+                    <!-- /.col-lg-12 -->
+                </div>
+                <!-- /.row -->
+
+
+
+            </div>
+        </div>
+        <!-- /#page-wrapper -->
+
+<% INCLUDE incl/footer.tt %>
+
+<script type="text/javascript">
+
+
+    <% formdata.map %>
+
+    $(document).ready(function(){
+
+        $('#weather-data').DataTable({
+            responsive: true,
+            "createdRow": function( row, data, dataIndex ) {
+                if ( data[5] > 0 ) {
+                    $( row ).css( "background-color", "green" );
+                    $( row ).addClass( "warning" );
+                }
+            },
+        });
+
+        var user_id = getCookie('user_id');
+        $("#user_id").html(user_id);
+
+        // Reference: http://jonthornton.github.io/jquery-timepicker/
+        $('#pickup_time').timepicker({'timeFormat': 'H:i:s', 'step': 15 , 'forceRoundTime': true});
+
+        var options={
+            format: 'yyyy-mm-dd',
+            container: container,
+            todayHighlight: true,
+            autoclose: true,
+            startDate: '2022-08-01',
+            endDate: '2022-12-01'
+        };
+
+        var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+    
+
+        var twstart=$('input[name="twstart"]');
+        twstart.datepicker(options);
+
+        var twend=$('input[name="twend"]');
+        twend.datepicker(options);
+
+        var harvest_date=$('input[name="harvest_date"]');
+        harvest_date.datepicker(options);
+
+    })
+
+
+
+    document.getElementById("updatefield").addEventListener("click", onUpdateField, false);
+    
+    var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+        }
+    };
+
+    function onUpdateField()
+    {
+        var lot     = getUrlParameter('lot');
+        var twstart = document.getElementById("twstart").value;
+        var twend   = document.getElementById("twend").value;
+        var area    = document.getElementById("area").value;
+        var yield_ton_ha     = document.getElementById("yield_ton_ha").value;
+        var harvest_date = document.getElementById("harvest_date").value;
+        var drydown_rate = document.getElementById("drydown_rate").value;
+        var picker  = $("#picker option:selected").text();
+        var plant = getUrlParameter('plant');
+        var plantNumber = getUrlParameter('plantNumber');
+
+        var regex = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/g;
+        console.log(harvest_date);
+        var OK = regex.exec(harvest_date);
+        if(!OK)
+        {
+            console.log("Invalid date!");
+            harvest_date = "0000-00-00";
+        }
+
+
+        var dt_start = new Date(twstart);
+        var dt_end = new Date(twend);
+
+        if(dt_end < dt_start) {
+            alert('Harv.Dates :: End date must be after start date!');
+            return;
+        }
+
+        if (isNaN( area )) {
+            // It isn't a number
+            alert('Please check the value of the area provided. Not a valid number!');
+            return;
+        } 
+
+        if (isNaN( yield_ton_ha )) {
+            // It isn't a number
+            alert('Please check the value of the yield provided. Not a valid number!');
+            return;
+        } 
+
+        if(drydown_rate !== "undefined")
+        {
+            if (isNaN( drydown_rate)) {
+                // It isn't a number
+                alert('Please check the value of the dry down rate provided. Not a valid number!');
+                return;
+            } else {
+                if(drydown_rate < 0 || drydown_rate > 5)
+                {
+                    alert('Please inform a valid dry down rate!');
+                    return;
+                }
+            }
+        } else {
+            alert('Please check the value of the dry down rate provided. Not a valid number!');
+            return;
+        }
+
+        var dataString = "lot=" + lot + "&twstart=" + twstart + "&twend=" + twend + "&area=" + area + "&yield_ton_ha=" + yield_ton_ha + "&picker=" + picker + "&harvest_date=" + harvest_date + "&drydown_rate=" + drydown_rate;
+        dataString += "&plant=" + plant;
+        dataString += "&plantNumber=" + plantNumber;
+        console.log(dataString);
+        
+        $.ajax(
+        {
+            type: "POST",
+            url: "/editfield_action",
+            data: dataString,
+            crossDomain: true,
+            cache: false,
+            beforeSend: function () { },
+            success: function (data) {
+
+                alert("Field successfully updated!");
+                var url = "/editfield?lot=" + lot + "&plant=" + plant + "&plantNumber=" + plantNumber;
+                window.location.href = url;
+            },
+            error: function (jqXHR, exception) {
+                var msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connected.\n Please check the network.';
+                } else if (jqXHR.status == 404) {
+                    msg = 'Page not found. [404]';
+                } else if (jqXHR.status == 500) {
+                    msg = 'Internal server error [500].';
+                } else if (exception === 'parsererror') {
+                    msg = 'Failed to parse answer (JSON).';
+                } else if (exception === 'timeout') {
+                    msg = 'Time limit exceeded.';
+                } else if (exception === 'abort') {
+                    msg = 'Aborted Ajax request.';
+                } else {
+                    msg = 'Unknown error.\n' + jqXHR.responseText;
+                }
+                alert(msg);
+            }
+        });
+        
+    }
+
+</script>
+
+<!-- End of file -->
+</body>
+</html>

@@ -1,0 +1,203 @@
+<% INCLUDE incl/header.tt %>
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">GSM Data</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+
+            <div class="row">
+
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i>
+                            <button id="download-xlsx">Download XLSX</button>
+                        </div>
+                        <div>
+                            <select id="filter-field">
+                                <option></option>
+                                <option value="production_field_id">production_field_id</option>
+                                <option value="country">country</option>
+                                <option value="site_key">site_key</option>
+                                <option value="plant">plant</option>
+                                <option value="field_num">field_num</option>
+                                <option value="macrozone">macrozone</option>
+                                <option value="pfo_name">pfo_name</option>
+                                <option value="user_group">user_group</option>
+                                <option value="year">year</option>
+                                <option value="season">season</option>
+                                <option value="planting_date">planting_date</option>
+                                <option value="female_fertile">female_fertile</option>
+                                <option value="variety">variety</option>
+                                <option value="ff_area">ff_area</option>
+                                <option value="moist35_date">moist35_date</option>
+                                <option value="drydown_rate">drydown_rate</option>
+                                <option value="optimal_mst_harvest_date">optimal_mst_harvest_date</option>
+                                <option value="min_mst_harvest_date">min_mst_harvest_date</option>
+                                <option value="max_mst_harvest_date">max_mst_harvest_date</option>
+                                <option value="lat">lat</option>
+                                <option value="lon">lon</option>
+                                <option value="report_date">report_date</option>
+                            </select>
+
+                            <select id="filter-type">
+                                <option value="=">=</option>
+                                <option value="<"><</option>
+                                <option value="<="><=</option>
+                                <option value=">">></option>
+                                <option value=">=">>=</option>
+                                <option value="!=">!=</option>
+                                <option value="like">like</option>
+                            </select>
+
+                            <input id="filter-value" type="text" placeholder="value to filter">
+
+                            <button id="filter-clear">Clear Filter</button>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="gsm-table"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+        </div>
+        <!-- /#page-wrapper -->
+
+<% INCLUDE incl/footer.tt %>
+
+<script type="text/javascript">
+
+    var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+        }
+    };
+
+    $(document).ready(function(){
+        var plant = getUrlParameter("plant");
+        document.getElementById("plant").innerHTML = plant;
+    })
+
+    // See: http://tabulator.info/examples/4.9#ajax
+
+    //Define variables for input elements
+    var fieldEl = document.getElementById("filter-field");
+    var typeEl = document.getElementById("filter-type");
+    var valueEl = document.getElementById("filter-value");
+
+    //Trigger setFilter function with correct parameters
+    function updateFilter()
+    {
+        var filterVal = fieldEl.options[fieldEl.selectedIndex].value;
+        var typeVal = typeEl.options[typeEl.selectedIndex].value;
+
+        var filter = filterVal == "function" ? customFilter : filterVal;
+
+        if(filterVal == "function" ) {
+            typeEl.disabled = true;
+            valueEl.disabled = true;
+        } else{
+            typeEl.disabled = false;
+            valueEl.disabled = false;
+        }
+
+        if(filterVal) {
+            gsm_table.setFilter(filter,typeVal, valueEl.value);
+        }
+    }
+
+    //Update filters on value change
+    document.getElementById("filter-field").addEventListener("change", updateFilter);
+    document.getElementById("filter-type").addEventListener("change", updateFilter);
+    document.getElementById("filter-value").addEventListener("keyup", updateFilter);
+
+    //Clear filters on "Clear Filters" button click
+    document.getElementById("filter-clear").addEventListener("click", function(){
+        fieldEl.value = "";
+        typeEl.value = "=";
+        valueEl.value = "";
+
+        gsm_table.clearFilter();
+    });
+
+    //trigger download of data.xlsx file
+    document.getElementById("download-xlsx").addEventListener("click", function(){
+        gsm_table.download("xlsx", "gsm_data.xlsx", {sheetName:"GSM"});
+    });
+
+
+    /***************************************************************************/
+    var gsm_table = new Tabulator("#gsm-table", {
+        movableRows: true, //enable movable rows
+        height:"600px", //set the table height option
+        selectable:1,
+        ajaxURL:"/ajax-gsm-data",
+        paginationSize:20,
+        placeholder:"No Data Set",
+        columns:[
+            {title:"entityid", field:"entityid", sorter:"text", bottomCalc: "count"},
+            {title:"country", field:"country", sorter:"text"},
+            {title:"site_key", field:"site_key", sorter:"text"},
+            {title:"plant", field:"plant", sorter:"text"},
+            {title:"field_num", field:"field_num", sorter:"number"},
+            {title:"macrozone", field:"macrozone", sorter:"text"},
+            {title:"pfo_name", field:"pfo_name", sorter:"text"},
+            {title:"user_group", field:"user_group", sorter:"text"},
+            {title:"year", field:"year", sorter:"number"},
+            {title:"season", field:"season", sorter:"text"},
+            {title:"planting_date", field:"planting_date", sorter:"text"},
+            {title:"female_fertile", field:"female_fertile", sorter:"text"},
+            {title:"variety", field:"variety", sorter:"text"},
+            {title:"ff_area", field:"ff_area", sorter:"number", bottomCalc:"sum"},
+
+            {title:"moist35_date", field:"moist35_date", sorter:"text", formatter:function(cell) {
+                cell.getElement().style.backgroundColor = "#D4EFDF";
+                return '<span style=color:blue>' + cell.getRow().getData().moist35_date + '</span>';
+            }},
+            {title:"drydown_rate", field:"drydown_rate", sorter:"number", formatter:function(cell) {
+                cell.getElement().style.backgroundColor = "#D4EFDF";
+                return '<span style=color:blue>' + cell.getRow().getData().drydown_rate + '</span>';
+            }},
+            {title:"optimal_mst_harvest_date", field:"optimal_mst_harvest_date", sorter:"text", formatter:function(cell) {
+                cell.getElement().style.backgroundColor = "#D4EFDF";
+                return '<span style=color:blue>' + cell.getRow().getData().optimal_mst_harvest_date + '</span>';
+            }},
+            {title:"min_mst_harvest_date", field:"min_mst_harvest_date", sorter:"text", formatter:function(cell) {
+                cell.getElement().style.backgroundColor = "#D4EFDF";
+                return '<span style=color:blue>' + cell.getRow().getData().min_mst_harvest_date + '</span>';
+            }},
+            {title:"max_mst_harvest_date", field:"max_mst_harvest_date", sorter:"text", formatter:function(cell) {
+                cell.getElement().style.backgroundColor = "#D4EFDF";
+                return '<span style=color:blue>' + cell.getRow().getData().max_mst_harvest_date + '</span>';
+            }},
+            
+            {title:"lat", field:"lat", sorter:"number"},
+            {title:"lon", field:"lon", sorter:"number"},
+            {title:"report_date", field:"report_date", sorter:"text"},
+        ],
+    });
+
+    /***************************************************************************/
+
+
+</script>
+<!-- End of file -->
+</body>
+</html>

@@ -1,0 +1,236 @@
+<% INCLUDE incl/header.tt %>
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-6">
+                    <h1 class="page-header">View attributes of a Field</h1>
+                </div>
+            </div>
+                <!-- /.col-lg-12 -->
+            
+            <div class="row">
+                <div class="col-lg-6">
+                    <form>
+                    
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><% formdata.LOT %></div>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label class="control-label" for="date">Field</label>
+                                    <input class="form-control" type="text" name="lot" id="lot" value='<% formdata.LOT %>' disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label" for="date">Coordinates</label>
+                                    <input class="form-control" type="text" name="coordinates" id="coordinates" value='(<% formdata.LATITUDE %>,<% formdata.LONGITUDE %>)' disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label" for="date">Hybrid</label>
+                                    <input class="form-control" type="text" name="hybrid" id="hybrid" value='<% formdata.HYBRID %>)' disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label" for="date">ABC Classification</label>
+                                    <input class="form-control" type="text" name="abc" id="abc" value='<% formdata.ABC %>' disabled>
+                                </div>
+
+                                <div class="form-group has-success"> <!-- Date input -->
+                                    <label class="control-label" for="date">Start harv. date</label>
+                                    <input class="form-control" value='<% formdata.TWSTART %>' id="twstart" name="twstart" placeholder="YYYY-MM-DD" type="text" disabled>
+                                </div>
+
+                                <div class="form-group has-success"> <!-- Date input -->
+                                    <label class="control-label" for="date">End harv. date</label>
+                                    <input class="form-control" value='<% formdata.TWEND %>' id="twend" name="twend" placeholder="YYYY-MM-DD" type="text" disabled>
+                                </div>
+
+                                <div class="form-group has-error"> <!-- Date input -->
+                                    <label class="control-label" for="date">Actual harvest date</label>
+                                    <input class="form-control" value='<% formdata.harvest_date %>' id="harvest_date" name="harvest_date" placeholder="YYYY-MM-DD" type="text" disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label" for="date">Area</label>
+                                    <input class="form-control" type="text" name="area" id="area" value='<% formdata.AREA %>' disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label" for="date">Yield (Ton.RW)</label>
+                                    <input class="form-control" type="text" name="ton" id="ton" value='<% formdata.KG %>' disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Picker group</label>
+                                    <input class="form-control" type="text" name="picker" id="picker" value='<% formdata.default_picker %>' disabled>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Field in the map
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="map"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+
+
+
+            </div>
+        </div>
+        <!-- /#page-wrapper -->
+
+<% INCLUDE incl/footer.tt %>
+
+<script type="text/javascript">
+
+    <% formdata.map %>
+
+    $(document).ready(function(){
+        var user_id = getCookie('user_id');
+        $("#user_id").html(user_id);
+
+        // Reference: http://jonthornton.github.io/jquery-timepicker/
+        $('#pickup_time').timepicker({'timeFormat': 'H:i:s', 'step': 15 , 'forceRoundTime': true});
+    
+
+        var twstart=$('input[name="twstart"]'); //our date input has the name "date"
+        var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+        var options={
+            format: 'yyyy-mm-dd',
+            container: container,
+            todayHighlight: true,
+            autoclose: true,
+            startDate: '+3d'
+        };
+        twstart.datepicker(options);
+
+        var twend=$('input[name="twend"]'); //our date input has the name "date"
+        var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+        var options={
+            format: 'yyyy-mm-dd',
+            container: container,
+            todayHighlight: true,
+            autoclose: true,
+            startDate: '+3d'
+        };
+        twend.datepicker(options);
+
+        var harvest_date=$('input[name="harvest_date"]'); //our date input has the name "date"
+        var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+        var options={
+            format: 'yyyy-mm-dd',
+            container: container,
+            todayHighlight: true,
+            autoclose: true,
+            startDate: <% min_harv_date %>,
+            endDate: <% max_harv_date %>
+        };
+        harvest_date.datepicker(options);
+
+    })
+
+
+
+    // document.getElementById("updatefield").addEventListener("click", onUpdateField, false);
+    
+    var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+        }
+    };
+
+    function onUpdateField()
+    {
+        // var lot     = getUrlParameter('lot');
+        var lot     = "<% formdata.LOT %>";
+        var twstart = document.getElementById("twstart").value;
+        var twend   = document.getElementById("twend").value;
+        var area    = document.getElementById("area").value;
+        var ton     = document.getElementById("ton").value;
+        var harvest_date = document.getElementById("harvest_date").value;
+        var picker  = $("#picker option:selected").text();
+
+        var dt_start = new Date(twstart);
+        var dt_end = new Date(twend);
+
+        if(dt_end < dt_start) {
+            alert('Harv.Dates :: End date must be after start date!');
+            return;
+        }
+
+        if (isNaN( area )) {
+            // It isn't a number
+            alert('Please check the value of the area provided. Not a valid number!');
+            return;
+        } 
+
+        if (isNaN( ton )) {
+            // It isn't a number
+            alert('Please check the value of the area provided. Not a valid number!');
+            return;
+        } 
+
+        var dataString = "lot=" + lot + "&twstart=" + twstart + "&twend=" + twend + "&area=" + area + "&ton=" + ton + "&picker=" + picker + "&harvest_date=" + harvest_date;
+        console.log(dataString);
+        
+        $.ajax(
+        {
+            type: "POST",
+            url: "/editfield_action",
+            data: dataString,
+            crossDomain: true,
+            cache: false,
+            beforeSend: function () { },
+            success: function (data) {
+
+                alert("Field successfully updated!");
+                window.location.href = "/fieldstoharvest";
+            },
+            error: function (jqXHR, exception) {
+                var msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connected.\n Please check the network.';
+                } else if (jqXHR.status == 404) {
+                    msg = 'Page not found. [404]';
+                } else if (jqXHR.status == 500) {
+                    msg = 'Internal server error [500].';
+                } else if (exception === 'parsererror') {
+                    msg = 'Failed to parse answer (JSON).';
+                } else if (exception === 'timeout') {
+                    msg = 'Time limit exceeded.';
+                } else if (exception === 'abort') {
+                    msg = 'Aborted Ajax request.';
+                } else {
+                    msg = 'Unknown error.\n' + jqXHR.responseText;
+                }
+                alert(msg);
+            }
+        });
+        
+    }
+
+</script>
+
+<!-- End of file -->
+</body>
+</html>

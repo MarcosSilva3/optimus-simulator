@@ -1,0 +1,841 @@
+<% INCLUDE incl/header.tt %>
+
+    <!-- Plotly Charts JavaScript -->
+    <script src="vendor/plotly/plotly-latest.min.js"></script>
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Dashboard</h1>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-primary">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-leaf fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge"><span id="qttyfields"></span></div>
+                                    <div>Total plots</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="/fieldstoharvest?plant=<% plant %>&plantNumber=<% plantNumber %>">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-green">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-check-circle-o fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge"><span id="qtty_planters"></span></div>
+                                    <div>Total Planters</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="/fieldsharvested?plant=<% plant %>&plantNumber=<% plantNumber %>">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-yellow">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-truck fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge"><span id="qtty_drones"></span></div>
+                                    <div>Total Drones</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="panel panel-red">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-cloud fa-5x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    <div class="huge"><span id="qtty_combines"></span></div>
+                                    <div>Total Combines</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                
+            </div>
+
+
+            <!-- /.row -->
+            <div class="row">
+
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-map-marker fa-fw"></i> Map with fields to harvest
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="map" style="height:800px"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-6 -->
+            </div>
+
+            <div class="row">
+
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Expected volume per week (Ton.RW) - Click in the bar to filter the fields
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="volume_per_week_interactive"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-6 -->
+
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Expected area (ha) per week
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="area_per_week"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-6 -->
+
+            </div>
+            <!-- /.row -->
+
+            <div class="row">
+
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Fields <span id="selected_week"></span>
+                            
+                        </div>
+                        <div>
+                            <select id="filter-field">
+                                <option></option>
+                                <option value="region">Region</option>
+                                <option value="seed_plant">Seed Plant</option>
+                                <option value="tracking_number">Tracking Number</option>
+                                <option value="hybrid">Hybrid</option>
+                                <option value="picker_group">Picker Group</option>
+                                <option value="female">Female</option>
+                                <option value="male">Male</option>
+                                <option value="grower">Grower</option>
+                                <option value="active_ha">Area</option>
+                                <option value="yield_ton_ha">Yield (ton/ha)</option>
+                                <option value="trucks">Trucks</option>
+                                <option value="harvest_date">Est.Harv.Date</option>
+                                <option value="harvest_window_start">harvest_window_start</option>
+                                <option value="harvest_window_end">harvest_window_end</option>
+                                <option value="hom_harv_date">HOM.Harv.Date</option>
+                                <option value="hom_moisture">HOM.Moisture</option>
+                                <option value="dh_qualifyed">DH Qualifyed</option>
+                                <option value="suspect">Suspect</option>
+                                <option value="suspect_comments">Suspect Comments</option>
+                                <option value="husking_difficulty">Husking Difficulty</option>
+                                <option value="mst">P90</option>
+                                <option value="mst_date">mst_date</option>
+                                <option value="actual_harvest_date">Actual Harv.Date</option>
+                                <option value="actual_harvest_moisture">Actual Harv.Moisture</option>
+                            </select>
+
+                            <select id="filter-type">
+                                <option value="=">=</option>
+                                <option value="<"><</option>
+                                <option value="<="><=</option>
+                                <option value=">">></option>
+                                <option value=">=">>=</option>
+                                <option value="!=">!=</option>
+                                <option value="like">like</option>
+                            </select>
+
+                            <input id="filter-value" type="text" placeholder="value to filter">
+
+                            <button id="filter-clear">Clear Filter</button>
+                            <button id="download-all-fields-xlsx">Download XLSX</button>
+                            <div id="moisture_wait"></div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="all-fields-table"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+
+            <div class="row">
+
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Expected volume per week
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="volume_per_week"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-6 -->
+
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Expected volume per day
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="volume_per_day"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-6 -->
+
+            </div>
+            <!-- /.row -->
+
+            <div class="row">
+
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Expected number of hybrids per day
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="hybrids_per_day"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-6 -->
+
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Expected area harvested per day and zone
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="area_per_day"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-6 -->
+
+            </div>
+            <!-- /.row -->
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Number of trucks per day
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="trucks_per_day"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-6 -->
+
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Number of trucks per week
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="trucks_per_week"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-6 -->
+
+            </div>
+            <!-- /.row -->
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Average area to be harvested per picker group
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="plt_area_picker"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-6 -->
+
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Average number of fields assigned to each picker group
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="plt_fields_picker"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-6 -->
+
+            </div>
+            <!-- /.row -->
+
+            <div class="row">
+
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Lateness - Fields
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="lateness_fields"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-6 -->
+
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Lateness - Volume (Ton.RW)
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="lateness_volume"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-6 -->
+            </div>
+            <!-- /.row -->
+
+            <% plot_regions %>
+
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            Weather Forecast in the Site  - Source: <a href="https://www.ibm.com/weather">IBM The Weather Company (TWC)</a>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <table width="100%" class="table table-striped table-bordered table-hover" id="weather-data">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Day of Week</th>
+                                        <th>Tmin (C)</th>
+                                        <th>TMax (C)</th>
+                                        <th>Precip. Chance (%)</th>
+                                        <th>Precipitation (mm)</th>
+                                        <th>Narrative</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% FOREACH req IN reqs %>
+                                    <tr class="odd gradeX">
+                                        <td><% req.date %></td>
+                                        <td><% req.dow %></td>
+                                        <td><% req.tmin %></td>
+                                        <td><% req.tmax %></td>
+                                        <td><% req.precipitation_chance %></td>
+                                        <td><% req.precipitation %></td>
+                                        <td><% req.narrative %></td>
+                                    </tr>
+                                    <% END %>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+
+
+
+        </div>
+        <!-- /#page-wrapper -->
+
+<% INCLUDE incl/footer.tt %>
+
+<script type="text/javascript">
+
+    function initMap() {
+        const uluru = { lat: -18.7441164168487, lng: -47.9308087461744 };
+        const map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 5,
+          center: uluru,
+        });
+        <% map %>
+    }
+
+    <% plotly_volume_per_day %>
+
+    <% plotly_volume_per_week %>
+    
+    <% plotly_hybrids_per_day %>
+
+    <% plotly_area_per_day %>
+
+    <% plotly_lateness_fields %>
+
+    <% plotly_lateness_volume %>
+
+    <% plotly_trucks_per_day %>
+
+    <% plotly_trucks_per_week %>
+
+    <% plotly_area_per_picker %>
+
+    <% plotly_fields_per_picker %>
+
+    <% plotly_area_per_week %>
+
+    <% plotly_volume_per_week_interactive %>
+
+    var myPlot = document.getElementById('volume_per_week_interactive'),
+        data = data_gsm_volume,
+        layout = {
+            hovermode:'closest',
+            barmode: 'stack',
+            title:'Ton.RW per week'
+        };
+
+    Plotly.newPlot('volume_per_week_interactive', data, layout);
+
+    myPlot.on('plotly_click', function(data) {
+        var harv_week = '';
+        harv_week = data.points[0].x;
+        var color = data.points[0].color;
+        var pn='', tn='', colors=[];
+
+        console.log("Week: " + harv_week + " => color: " + color);
+
+        var colors = [];
+        for(var i=0; i < data.points.length; i++){
+            pn = data.points[i].pointNumber;
+            tn = data.points[i].curveNumber;
+            // colors[i] = 'blue';
+        };
+
+        colors[pn] = 'red';
+
+        var update = {'marker':{color: colors}};
+        Plotly.restyle('volume_per_week_interactive', update);
+
+        var url = "/ajax-all-fields-week?plant=<% plant %>&plantNumber=<% plantNumber %>&week_number=" + harv_week;
+        all_fields_table.setData(url);
+
+        $("#selected_week").html("Week " + harv_week);
+    });
+
+
+
+    
+
+    var distinctCalc = function(values, data, calcParams) {
+        //values - array of column values
+        //data - all table data
+        //calcParams - params passed from the column definition object
+
+        var calc = 0;
+        const map1 = new Map();
+
+        values.forEach(function(value){
+            map1.set(value, 1);
+        });
+
+        calc = map1.size;
+        return calc;
+    };
+
+    //define row context menu contents
+    var rowMenu = [
+        {
+            label:"<i class='fas fa-user'></i> Change Name",
+            action:function(e, row){
+                row.update({name:"Steve Bobberson"});
+            }
+        },
+        {
+            label:"<i class='fas fa-check-square'></i> Select Row",
+            action:function(e, row){
+                row.select();
+            }
+        },
+        {
+            separator:true,
+        },
+        {
+            label:"Admin Functions",
+            menu:[
+                {
+                    label:"<i class='fas fa-trash'></i> Delete Row",
+                    action:function(e, row){
+                        row.delete();
+                    }
+                },
+                {
+                    label:"<i class='fas fa-ban'></i> Disabled Option",
+                    disabled:true,
+                },
+            ]
+        }
+    ]
+
+    //define column header menu as column visibility toggle
+    var headerMenu = function() {
+        var menu = [];
+        var columns = this.getColumns();
+
+        for(let column of columns){
+
+            //create checkbox element using font awesome icons
+            let icon = document.createElement("i");
+            icon.classList.add("fa");
+            icon.classList.add(column.isVisible() ? "fa-check-square" : "fa-square");
+
+            //build label
+            let label = document.createElement("span");
+            let title = document.createElement("span");
+
+            title.textContent = " " + column.getDefinition().title;
+
+            label.appendChild(icon);
+            label.appendChild(title);
+
+            //create menu item
+            menu.push({
+                label:label,
+                action:function(e){
+                    //prevent menu closing
+                    e.stopPropagation();
+
+                    //toggle current column visibility
+                    column.toggle();
+
+                    //change menu item icon
+                    if(column.isVisible()){
+                        icon.classList.remove("fa-square");
+                        icon.classList.add("fa-check-square");
+                    }else{
+                        icon.classList.remove("fa-check-square");
+                        icon.classList.add("fa-square");
+                    }
+                }
+            });
+        }
+
+        return menu;
+    };
+
+    var all_fields_table = new Tabulator("#all-fields-table", {
+        height:"600px", //set the table height option
+        selectable:1,
+        ajaxURL:"/ajax-all-fields?plant=<% plant %>&plantNumber=<% plantNumber %>",
+        paginationSize:20,
+        placeholder:"No Data Set",
+        
+        columns:[
+            {title:"Region", field:"region", headerFilter:"input", sorter:"text", bottomCalc:distinctCalc, headerMenu:headerMenu},
+            {title:"Seed Plant", field:"seed_plant", headerFilter:"input", sorter:"text", bottomCalc:distinctCalc, headerMenu:headerMenu},
+            {title:"Tracking Number", field:"tracking_number", headerFilter:"input", sorter:"text", bottomCalc:distinctCalc, headerMenu:headerMenu},
+            {title:"Hybrid", field:"hybrid", headerFilter:"input", sorter:"text", bottomCalc:distinctCalc, headerMenu:headerMenu},
+            {title:"Picker Group", field:"picker_group", headerFilter:"input", sorter:"text", bottomCalc:distinctCalc, headerMenu:headerMenu},
+            {title:"Female", field:"female", sorter:"number", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", bottomCalc:"sum", headerMenu:headerMenu},
+            {title:"Male", field:"male", headerFilter:"input", sorter:"number", headerMenu:headerMenu},
+            {title:"Grower", field:"grower", headerFilter:"input", sorter:"text", bottomCalc:distinctCalc, headerMenu:headerMenu},
+            {title:"Area", field:"active_ha", sorter:"number", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", bottomCalc:"sum", headerMenu:headerMenu},
+            {title:"Yield (ton/ha)", field:"yield_ton_ha", sorter:"number", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", bottomCalc:"sum", headerMenu:headerMenu},
+            {title:"Trucks", field:"trucks", sorter:"number", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", bottomCalc:"sum", headerMenu:headerMenu},
+            {title:"Est.Harv.Date", field:"harvest_date", sorter:"text", headerFilter:"input", formatter:function(cell) {
+                cell.getElement().style.backgroundColor = "#FFF9C4";
+                return '<span style=color:blue>' + cell.getRow().getData().harvest_date + '</span>';
+            }, headerMenu:headerMenu},
+            {title:"harvest_window_start", field:"harvest_window_start", headerFilter:"input", formatter:"datetime", formatterParams:{
+                inputFormat:"YYYY-MM-DD",
+                outputFormat:"DD/MM/YY",
+                invalidPlaceholder:"(invalid date)",
+            }, headerMenu:headerMenu},
+            {title:"harvest_window_end", field:"harvest_window_end", headerFilter:"input", formatter:"datetime", formatterParams:{
+                inputFormat:"YYYY-MM-DD",
+                outputFormat:"DD/MM/YY",
+                invalidPlaceholder:"(invalid date)",
+            }, headerMenu:headerMenu},
+            // From HOM output
+            {title:"HOM.Harv.Date", field:"hom_harv_date", sorter:"text", headerFilter:"input", formatter:function(cell) {
+                cell.getElement().style.backgroundColor = "#D4EFDF";
+                return '<span style=color:blue>' + cell.getRow().getData().hom_harv_date + '</span>';
+            }, headerMenu:headerMenu},
+            {title:"HOM.Moisture", field:"hom_moisture", sorter:"number", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", formatter:function(cell) {
+                cell.getElement().style.backgroundColor = "#D4EFDF";
+                return '<span style=color:blue>' + cell.getRow().getData().hom_moisture + '</span>';
+            }, headerMenu:headerMenu},
+            {title:"DH Qualified", field:"dh_qualifyed", headerFilter:"input", sorter:"text", bottomCalc:distinctCalc, headerMenu:headerMenu},
+            {title:"Suspect", field:"suspect", sorter:"number", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", bottomCalc:"sum", headerMenu:headerMenu},
+            {title:"Suspect Comments", field:"suspect_comments", sorter:"number", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", bottomCalc:"sum", headerMenu:headerMenu},
+            {title:"Husking Difficulty", field:"husking_difficulty", headerFilter:"input", sorter:"text", headerMenu:headerMenu},
+            {title:"P90", field:"mst", sorter:"number", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", bottomCalc:"sum", headerMenu:headerMenu},
+            {title:"mst_date", field:"mst_date", headerFilter:"input", formatter:"datetime", formatterParams:{
+                inputFormat:"YYYY-MM-DD",
+                outputFormat:"DD/MM/YY",
+                invalidPlaceholder:"(invalid date)",
+            }, headerMenu:headerMenu},
+            {title:"Actual Harv.Date", field:"actual_harvest_date", headerFilter:"input", formatter:"datetime", formatterParams:{
+                inputFormat:"YYYY-MM-DD",
+                outputFormat:"DD/MM/YY",
+                invalidPlaceholder:"(invalid date)",
+            }, headerMenu:headerMenu},
+            {title:"Actual Harv.Moisture", field:"actual_harvest_moisture", sorter:"number", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", bottomCalc:"sum", headerMenu:headerMenu},
+            
+        ],
+    });
+
+    //Update filters on value change
+    document.getElementById("filter-field").addEventListener("change", updateFilter);
+    document.getElementById("filter-type").addEventListener("change", updateFilter);
+    document.getElementById("filter-value").addEventListener("keyup", updateFilter);
+
+    //Define variables for input elements
+    var fieldEl = document.getElementById("filter-field");
+    var typeEl = document.getElementById("filter-type");
+    var valueEl = document.getElementById("filter-value");
+
+    //Trigger setFilter function with correct parameters
+    function updateFilter()
+    {
+        var filterVal = fieldEl.options[fieldEl.selectedIndex].value;
+        var typeVal = typeEl.options[typeEl.selectedIndex].value;
+
+        var filter = filterVal == "function" ? customFilter : filterVal;
+
+        if(filterVal == "function" ) {
+            typeEl.disabled = true;
+            valueEl.disabled = true;
+        } else{
+            typeEl.disabled = false;
+            valueEl.disabled = false;
+        }
+
+        if(filterVal) {
+            all_fields_table.setFilter(filter,typeVal, valueEl.value);
+        }
+    }
+
+    //Clear filters on "Clear Filters" button click
+    document.getElementById("filter-clear").addEventListener("click", function(){
+        fieldEl.value = "";
+        typeEl.value = "=";
+        valueEl.value = "";
+
+        all_fields_table.clearFilter();
+
+        all_fields_table.getColumn("region").setHeaderFilterValue("");
+        all_fields_table.getColumn("seed_plant").setHeaderFilterValue("");
+        all_fields_table.getColumn("tracking_number").setHeaderFilterValue("");
+        all_fields_table.getColumn("hybrid").setHeaderFilterValue("");
+        all_fields_table.getColumn("picker_group").setHeaderFilterValue("");
+        all_fields_table.getColumn("female").setHeaderFilterValue("");
+        all_fields_table.getColumn("male").setHeaderFilterValue("");
+        all_fields_table.getColumn("grower").setHeaderFilterValue("");
+        all_fields_table.getColumn("active_ha").setHeaderFilterValue("");
+        all_fields_table.getColumn("yield_ton_ha").setHeaderFilterValue("");
+        all_fields_table.getColumn("trucks").setHeaderFilterValue("");
+        all_fields_table.getColumn("harvest_date").setHeaderFilterValue("");
+        all_fields_table.getColumn("harvest_window_start").setHeaderFilterValue("");
+        all_fields_table.getColumn("harvest_window_end").setHeaderFilterValue("");
+        all_fields_table.getColumn("hom_harv_date").setHeaderFilterValue("");
+        all_fields_table.getColumn("hom_moisture").setHeaderFilterValue("");
+        all_fields_table.getColumn("dh_qualifyed").setHeaderFilterValue("");
+        all_fields_table.getColumn("suspect").setHeaderFilterValue("");
+        all_fields_table.getColumn("suspect_comments").setHeaderFilterValue("");
+        all_fields_table.getColumn("husking_difficulty").setHeaderFilterValue("");
+        all_fields_table.getColumn("mst").setHeaderFilterValue("");
+        all_fields_table.getColumn("mst_date").setHeaderFilterValue("");
+        all_fields_table.getColumn("actual_harvest_date").setHeaderFilterValue("");
+        all_fields_table.getColumn("actual_harvest_moisture").setHeaderFilterValue("");
+    });
+
+    //trigger download of data.xlsx file
+    document.getElementById("download-all-fields-xlsx").addEventListener("click", function(){
+        all_fields_table.download("xlsx", "field_manager.xlsx", {sheetName:"Field_Manager"});
+    });
+
+
+    var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+        }
+    };
+
+    $(document).ready(function() {
+
+        var plant = getUrlParameter("plant");
+        var plantNumber = getUrlParameter("plantNumber");
+        var url_dashboard_data = "dashboard_data?plant=" + plant + "&plantNumber=" + plantNumber;
+
+        ///////////////////////////////////////////////////////////////////////////
+
+        var request_user = $.ajax({
+            type: "GET",
+            url: '/auth-token-info',
+            crossDomain: true,
+            cache: false,
+            beforeSend: function () { }
+        });
+
+        request_user.done(function (msg) {
+            var user_id = msg["user-id"];
+            user_id = user_id.toUpperCase();
+            $("#user_id").html(user_id);
+            setCookie('user_id', user_id, 365);
+            // window.history.replaceState(null, null, "?arg=123");
+        });
+
+        request_user.fail(function (jqXHR, textStatus) {
+            // alert("Failed to get data about user: " + textStatus);
+        });
+
+        ///////////////////////////////////////////////////////////////////////////
+
+        $('#weather-data').DataTable({
+            responsive: true,
+            "createdRow": function( row, data, dataIndex ) {
+                if ( data[5] > 0 ) {
+                    $( row ).css( "background-color", "green" );
+                    $( row ).addClass( "warning" );
+                }
+            },
+            "pageLength": 50 // https://datatables.net/reference/option/pageLength
+        });
+
+        ///////////////////////////////////////////////////////////////////////////
+        var request_dashboard_data = $.ajax({
+            type: "GET",
+            url: url_dashboard_data,
+            crossDomain: true,
+            cache: false,
+            beforeSend: function () { }
+        });
+
+        request_dashboard_data.done(function (data) {
+            var json = $.parseJSON(data);
+            $("#qttyfields").html(json.qttyfields);
+            $("#qttyfields_harv").html(json.qttyfields_harv);
+            $("#qttytrucks_unloaded").html(json.qttytrucks_unloaded);
+        });
+
+        request_dashboard_data.fail(function (jqXHR, textStatus) {
+            alert("Failed to get data about fields: " + textStatus);
+        });
+
+        ///////////////////////////////////////////////////////////////////////////
+        
+    })
+
+
+    
+
+
+</script>
+<!-- End of file -->
+</body>
+</html>

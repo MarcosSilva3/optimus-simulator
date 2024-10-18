@@ -1,0 +1,119 @@
+<% INCLUDE incl/header.tt %>
+
+<!-- Page Content -->
+<div id="page-wrapper">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1 class="page-header">Please select a scenario</h1>
+            </div>
+            <!-- /.col-lg-12 -->
+        </div>
+        <!-- /.row -->
+        <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Scenarios
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <table width="100%" class="table table-striped table-bordered table-hover" id="dataTables-example">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Select scenario</th>
+                                <th>Download</th>
+                                <th>Created by</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% FOREACH scenario IN scenarios %>
+                            <tr class="odd gradeX">
+                                <td><% scenario.date %></td>
+                                <td><% scenario.time %></td>
+                                <td><% scenario.link %></td>
+                                <td><% scenario.download %></td>
+                                <td><% scenario.user_id %></td>
+                            </tr>
+                            <% END %>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+</div>
+<!-- /.container-fluid -->
+</div>
+<!-- /#page-wrapper -->
+
+<% INCLUDE incl/footer.tt %>
+<script>
+
+    $(document).ready(function() {
+
+        ///////////////////////////////////////////////////////////////////////////
+
+        var request_user = $.ajax({
+            type: "GET",
+            url: 'https://hom-app.velocity-np.ag/auth-token-info',
+            crossDomain: true,
+            cache: false,
+            beforeSend: function () { }
+        });
+
+        request_user.done(function (msg) {
+            var user_id = msg["user-id"];
+            user_id = user_id.toUpperCase();
+            $("#user_id").html(user_id);
+            setCookie('user_id', user_id, 365);
+            window.history.replaceState(null, null, "?arg=123");
+        });
+
+        request_user.fail(function (jqXHR, textStatus) {
+            // alert("Failed to get data about user: " + textStatus);
+        });
+
+        ///////////////////////////////////////////////////////////////////////////
+
+        $('#dataTables-example').DataTable({
+            responsive: true,
+            "order": [[ 0, "desc" ], [ 1, "desc"]]
+        });
+
+        // Check for parameter jobid
+        var getUrlParameter = function getUrlParameter(sParam) {
+            var sPageURL = window.location.search.substring(1),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                }
+            }
+        };
+
+        var url = new URL(window.location.href);
+        if (url.searchParams.get('newjob')) {
+            var newjob = getUrlParameter('newjob');
+            var obj = JSON.parse(newjob);
+            alert("New job created!\n" + obj.timestamp);
+        }
+        
+    });
+
+</script>
+<!-- End of file -->
+</body>
+</html>
+
+

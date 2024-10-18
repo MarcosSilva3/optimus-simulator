@@ -1,0 +1,168 @@
+<% INCLUDE incl/header.tt %>
+
+        <div id="page-wrapper">
+            <div class="row">
+                <div class="col-lg-12">
+                    <h1 class="page-header">Edit receiving capacity of the site (specific date)</h1>
+                </div>
+            </div>
+                <!-- /.col-lg-12 -->
+            
+            <div class="row">
+                <div class="col-lg-3">
+                    <form>
+                    
+                        <div class="panel panel-default">
+                            <div class="panel-heading"><% formdata.SITE_NAME %></div>
+                            <div class="panel-body">
+                                <div class="form-group">
+                                    <label class="control-label" for="date">Start Date</label>
+                                    <input class="form-control" type="text" name="date_start" id="date_start" value='<% formdata.DATE %>' disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label" for="date">End Date</label>
+                                    <input class="form-control" type="text" name="date_end" id="date_end" value='<% formdata.DATE %>' disabled>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label" for="date">Ton.RW</label>
+                                    <input class="form-control" type="text" name="capton" id="capton" value='<% formdata.CAPTON %>'>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="control-label" for="date"># of hybrids</label>
+                                    <input class="form-control" type="text" name="caphy" id="caphy" value='<% formdata.CAPHY %>'>
+                                </div>
+
+                                <input type="button" id="updatesite" value="Update Site Capacity" name="updatesite">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="col-lg-9">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> # of hybrids / day
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="morris-hys"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+
+                <div class="col-lg-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Ton.RW / day
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div id="morris-ton"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+
+            </div>
+        </div>
+        <!-- /#page-wrapper -->
+
+<% INCLUDE incl/footer.tt %>
+
+<script type="text/javascript">
+
+    $(document).ready(function(){
+        var user_id = getCookie('user_id');
+        $("#user_id").html(user_id);
+    })
+
+    <% graph_ton %>
+
+    <% graph_hys %>
+    
+    document.getElementById("updatesite").addEventListener("click", onUpdateSite, false);
+    
+    var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+        }
+    };
+
+    function onUpdateSite()
+    {
+        var site    = getUrlParameter("site");
+        var date    = getUrlParameter("date");
+        var capton  = document.getElementById("capton").value;
+        var caphy   = document.getElementById("caphy").value;
+
+        if (isNaN( capton )) {
+            // It isn't a number
+            alert('Please check the value of Ton.RW provided. Not a valid number!');
+            return;
+        } 
+
+        if (isNaN( caphy )) {
+            // It isn't a number
+            alert('Please check the number of hybrids provided. Not a valid number!');
+            return;
+        } 
+
+        var dataString = "site_name=" + site + "&date=" + date + "&capton=" + capton + "&caphy=" + caphy;
+        console.log(dataString);
+        
+        $.ajax(
+        {
+            type: "POST",
+            url: "/editsite_date_action",
+            data: dataString,
+            crossDomain: true,
+            cache: false,
+            beforeSend: function () { },
+            success: function (data) {
+
+                alert("Site capacity successfully updated!");
+                window.location.href = "/sitecapacity";
+            },
+            error: function (jqXHR, exception) {
+                var msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connected.\n Please check the network.';
+                } else if (jqXHR.status == 404) {
+                    msg = 'Page not found. [404]';
+                } else if (jqXHR.status == 500) {
+                    msg = 'Internal server error [500].';
+                } else if (exception === 'parsererror') {
+                    msg = 'Failed to parse answer (JSON).';
+                } else if (exception === 'timeout') {
+                    msg = 'Time limit exceeded.';
+                } else if (exception === 'abort') {
+                    msg = 'Aborted Ajax request.';
+                } else {
+                    msg = 'Unknown error.\n' + jqXHR.responseText;
+                }
+                alert(msg);
+            }
+        });
+        
+    }
+
+</script>
+
+<!-- End of file -->
+</body>
+</html>

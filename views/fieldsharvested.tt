@@ -1,0 +1,248 @@
+<% INCLUDE incl/header.tt %>
+
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Fields harvested</h1>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    
+    <div class="row">
+
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> Fields already harvested
+                    <button id="filter-clear">Clear Filter</button>
+                </div>
+                <div><button id="download-fields-harvested-xlsx">Download XLSX</button></div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div style="max-width: 100%; margin: auto" id="tbl-fields-harvested"></div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-4 -->
+    </div>
+
+    <div class="row">
+
+        <div class="col-lg-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> Model adherence
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div style="max-width: 100%; margin: auto" id="model_adherence"></div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-6 -->
+
+        <div class="col-lg-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> Model adherence (%)
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div style="max-width: 100%; margin: auto" id="pie_adherence"></div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-6 -->
+
+    </div>
+    <!-- /.row -->
+
+    <div class="row">
+        <div class="col-lg-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> Actuals
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div style="max-width: 100%; margin: auto" id="barplot_date_moisture_total"></div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-4 -->
+
+        <div class="col-lg-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> Actual harvest date x Actual harvest moisture
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div style="max-width: 100%; margin: auto" id="barplot_date_moisture"></div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-8 -->
+
+    </div>
+    <!-- /.row -->
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <i class="fa fa-bar-chart-o fa-fw"></i> Actual harvest moisture
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div style="max-width: 100%; margin: auto" id="actual_moisture_bubble"></div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+    <!-- /.row -->
+
+
+</div>
+<!-- /#page-wrapper -->
+
+
+
+<% INCLUDE incl/footer.tt %>
+
+<script>
+
+    var distinctCalc = function(values, data, calcParams) {
+        //values - array of column values
+        //data - all table data
+        //calcParams - params passed from the column definition object
+
+        var calc = 0;
+        const map1 = new Map();
+
+        values.forEach(function(value){
+            map1.set(value, 1);
+        });
+
+        calc = map1.size;
+        return calc;
+    };
+
+    var tbl_fields_harvested = new Tabulator("#tbl-fields-harvested", {
+            height:"600px", //set the table height option
+            selectable:1,
+            ajaxURL:"/ajax-fields-harvested?plant=<% plant %>&plantNumber=<% plantNumber %>",
+            paginationSize:20,
+            placeholder:"No Data Set",
+            rowFormatter:function(row){
+                var delta_days = Math.abs(row.getData().delta_days);
+
+                if(delta_days <= 3){
+                    row.getElement().style.backgroundColor = "#ABEBC6";
+                } else if (delta_days > 3 && delta_days <= 5) {
+                    row.getElement().style.backgroundColor = "#F9E79F";
+                } else {
+                    row.getElement().style.backgroundColor = "#F5B7B1";
+                }
+            },
+            columns:[
+                
+                {title:"Field", field:"tracking_number", headerFilter:"input", sorter:"text", bottomCalc:distinctCalc},
+                {title:"Hybrid", field:"hybrid", headerFilter:"input", sorter:"text", bottomCalc:distinctCalc},
+                {title:"Grower", field:"grower", headerFilter:"input", sorter:"text", bottomCalc:distinctCalc},
+                {title:"Area", field:"area", sorter:"number", formatter:"money", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", bottomCalc:"sum", bottomCalcFormatter:"money"},
+                {title:"Ton.RW", field:"kg", sorter:"number", formatter:"money", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", bottomCalc:"sum", bottomCalcFormatter:"money"},
+
+                {title:"Start Harv. Date", field:"twstart", headerFilter:"input", formatter:"datetime", formatterParams:{
+                    inputFormat:"YYYY-MM-DD",
+                    outputFormat:"DD/MM/YY",
+                    invalidPlaceholder:"(invalid date)",
+                }},
+                {title:"End Harv. Date", field:"twend", headerFilter:"input", formatter:"datetime", formatterParams:{
+                    inputFormat:"YYYY-MM-DD",
+                    outputFormat:"DD/MM/YY",
+                    invalidPlaceholder:"(invalid date)",
+                }},
+
+                {title:"Actual Harv. Date", field:"actualHarvestDate", headerFilter:"input", formatter:"datetime", formatterParams:{
+                    inputFormat:"YYYY-MM-DD",
+                    outputFormat:"DD/MM/YY",
+                    invalidPlaceholder:"(invalid date)",
+                }},
+
+                // {title:"Actual Harv. Moisture", field:"moisturePercentage", sorter:"number", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">="},
+
+                // {title:"Actual Harv. Date", field:"actual_harvest_date", headerFilter:"input", sorter:"text"},
+
+                // From HOM output
+                {title:"HOM.Harv.Date", field:"hom_harv_date", sorter:"text", headerFilter:"input", formatter:function(cell) {
+                    cell.getElement().style.backgroundColor = "#D4EFDF";
+                    return '<span style=color:blue>' + cell.getRow().getData().hom_harv_date + '</span>';
+                }},
+                {title:"HOM.Moisture", field:"hom_moisture", sorter:"number", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">=", formatter:function(cell) {
+                    cell.getElement().style.backgroundColor = "#D4EFDF";
+                    return '<span style=color:blue>' + cell.getRow().getData().hom_moisture + '</span>';
+                }},
+                
+                {title:"Diff.Days", field:"delta_days", sorter:"number", headerFilter:"number", headerFilterPlaceholder:"at least...", headerFilterFunc:">="},
+            ]
+    });
+
+    //Clear filters on "Clear Filters" button click
+    document.getElementById("filter-clear").addEventListener("click", function(){
+        tbl_fields_harvested.getColumn("lot").setHeaderFilterValue("");
+        tbl_fields_harvested.getColumn("hybrid").setHeaderFilterValue("");
+        tbl_fields_harvested.getColumn("growerName").setHeaderFilterValue("");
+        tbl_fields_harvested.getColumn("area").setHeaderFilterValue("");
+        tbl_fields_harvested.getColumn("kg").setHeaderFilterValue("");
+        tbl_fields_harvested.getColumn("twstart").setHeaderFilterValue("");
+        tbl_fields_harvested.getColumn("twend").setHeaderFilterValue("");
+        tbl_fields_harvested.getColumn("harvest_date").setHeaderFilterValue("");
+        tbl_fields_harvested.getColumn("moisturePercentage").setHeaderFilterValue("");
+        tbl_fields_harvested.getColumn("hom_harv_date").setHeaderFilterValue("");
+        tbl_fields_harvested.getColumn("hom_moisture").setHeaderFilterValue("");
+        tbl_fields_harvested.getColumn("delta_days").setHeaderFilterValue("");
+        
+    });
+
+    //trigger download of data.xlsx file
+    document.getElementById("download-fields-harvested-xlsx").addEventListener("click", function(){
+        tbl_fields_harvested.download("xlsx", "HOM_fields_harvested.xlsx", {sheetName:"HOM_Fields_Harvested"});
+    });
+    
+
+    $(document).ready(function() {
+        
+        var user_id = getCookie('user_id');
+        $("#user_id").html(user_id);
+
+        $('#dataTables-example').DataTable({
+            responsive: true
+        });
+    });
+
+    <% model_adherence %>
+    <% pie_adherence %>
+    <% barplot_date_moisture %>
+    <% actual_moisture_bubble %>
+    <% barplot_date_moisture_total %>
+
+    
+</script>
+<!-- End of file -->
+</body>
+</html>
+

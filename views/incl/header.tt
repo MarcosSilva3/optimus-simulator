@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title><% title %></title>
+
+    <style>
+    #report-table {
+        font-size: 12px;
+    }
+    </style>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- MetisMenu CSS -->
+    <link href="vendor/metisMenu/metisMenu.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+    <link href="dist/css/sb-admin-2.css" rel="stylesheet">
+
+    <!-- Custom Fonts -->
+    <link href="vendor/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- DataTables CSS -->
+    <link href="vendor/datatables-plugins/dataTables.bootstrap.css" rel="stylesheet">
+
+    <!-- DataTables Responsive CSS -->
+    <link href="vendor/datatables-responsive/dataTables.responsive.css" rel="stylesheet">
+
+    <!-- Tabulator CSS -->
+    <link href="vendor/tabulator-master/dist/css/bootstrap/tabulator_bootstrap.min.css" rel="stylesheet">
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Bootstrap Date-Picker Plugin -->
+    <link rel="stylesheet" href="vendor/bootstrap/css/jquery.timepicker.css"/>
+
+    <link rel="stylesheet" href="vendor/bootstrap/css/bootstrap-datepicker3.css"/>
+
+    <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBMWoa6k9MlIwa5fIXN2_uWTdjfaM5YDbk&callback=initMap"></script>
+
+    <script type="text/javascript">
+    function setCookie(key, value, expiry) 
+    {
+        var expires = new Date();
+        expires.setTime(expires.getTime() + (expiry * 24 * 60 * 60 * 1000));
+        document.cookie = key + '=' + value + ';path=/' + ';expires=' + expires.toUTCString();
+    }
+
+    function getCookie(key) 
+    {
+        var keyValue = document.cookie.match('(^|;) ?' + key + '=([^;]*)(;|$)');
+        return keyValue ? keyValue[2] : null;
+    }
+
+    function eraseCookie(key)
+    {
+        var keyValue = getCookie(key);
+        setCookie(key, keyValue, '-1');
+    }
+
+
+    </script>
+
+    <style>
+        #map {
+            height: 400px;
+            /* The height is 400 pixels */
+            width: 100%;
+            /* The width is the width of the web page */
+        }
+        
+        .tabulator-row-odd {
+            background-color: #D5F5E3 !important;
+        }
+        
+        .tabulator-row-even {
+            background-color: #FAE5D3 !important;
+        }
+
+        .tabulator-selected {
+            background: #F1948A !important;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <div id="wrapper">
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="/index">Optimus Simulator</a>
+            </div>
+            <!-- /.navbar-header -->
+
+            <ul class="nav navbar-top-links navbar-right">
+                <!-- /.dropdown -->
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                        <i class="fa fa-user fa-fw"></i> <i class="fa fa-caret-down"></i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-user">
+                        <li><a href="#"><i class="fa fa-user fa-fw"></i><span id="user_id"></span></a></li>
+                        <li><a href="#"><i class="fa fa-home fa-fw"></i>Brazil</a></li>
+                    </ul>
+                    <!-- /.dropdown-user -->
+                </li>
+                <!-- /.dropdown -->
+            </ul>
+            <!-- /.navbar-top-links -->
+
+            <div class="navbar-default sidebar" role="navigation">
+                <div class="sidebar-nav navbar-collapse">
+                    <ul class="nav" id="side-menu">
+
+                    
+                    <li>
+                        <a href="/dashboard"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                    </li>
+                    <li>
+                        <a id="harvest-plan" href="/harvest-plan-week?plant=<% plant %>&plantNumber=<% plantNumber %>" ><i class="fa fa-calendar fa-fw"></i> Harvest Plan</a>
+                        <!-- /.nav-second-level -->
+                    </li>
+                    <li>
+                        <a id="harvest-plan" href="/field-manager?plant=<% plant %>&plantNumber=<% plantNumber %>" ><i class="fa fa-leaf fa-fw"></i> Field Manager</a>
+                        <!-- /.nav-second-level -->
+                    </li>
+                    <li>
+                        <a id="model-output" href="/model-output?plant=<% plant %>&plantNumber=<% plantNumber %>" ><i class="fa fa-flag fa-fw"></i> Model Output</a>
+                        <!-- /.nav-second-level -->
+                    </li>
+                    <li>
+                        <a href="#"><i class="fa fa-sitemap fa-fw"></i> Input data<span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                            <li>
+                                <a href="#">Fields <span class="fa arrow"></a>
+                                <ul class="nav nav-third-level">
+                                    <li>
+                                        <a href="/fieldstoharvest?plant=<% plant %>&plantNumber=<% plantNumber %>">Fields to Harvest</a>
+                                    </li>
+                                    <li>
+                                        <a href="/fieldsharvested?plant=<% plant %>&plantNumber=<% plantNumber %>">Fields harvested</a>
+                                    </li>
+                                </ul>
+                                <!-- /.nav-third-level -->
+                            </li>
+                            <li>
+                                <a href="#">Site <span class="fa arrow"></span></a>
+                                <ul class="nav nav-third-level">
+                                    <li>
+                                        <a href="/editsite?plant=<% plant %>&plantNumber=<% plantNumber %>">Update receiving capacity</a>
+                                    </li>
+                                </ul>
+                                
+                            </li>
+                            <li>
+                                <a href="#">Pickers <span class="fa arrow"></span></a>
+                                <ul class="nav nav-third-level">
+                                    <% FOREACH picker IN pickers %>
+                                        <li><a href="/viewpicker?picker=<% picker %>&plant=<% plant %>&plantNumber=<% plantNumber %>"><% picker %></a></li>
+                                    <% END %>
+                                </ul>
+                            </li>
+                        </ul>
+                        <!-- /.nav-second-level -->
+                    </li>
+                    <li>
+                        <a id="gsm_data" href="/gsm_data?plant=<% plant %>&plantNumber=<% plantNumber %>" ><i class="fa fa-signal fa-fw"></i> GSM </a>
+                    </li>
+                    <li>
+                        <a href="#" id="solve"><i class="fa fa-gear fa-fw"></i> Solve HOM</a>
+                        <div id="last_run_date_time">Last run: <% last_run_date_time %></div>
+                        <div id="loader" style="display:none;">Solving... please wait</div>
+
+                        <!-- /.nav-second-level -->
+                    </li>
+                    
+
+
+
+                    </ul>
+                </div>
+                <!-- /.sidebar-collapse -->
+            </div>
+            <!-- /.navbar-static-side -->
+        </nav>
+

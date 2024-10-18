@@ -1,0 +1,159 @@
+<% INCLUDE incl/header.tt %>
+
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-6">
+            <h1 class="page-header">Upload Lares file</h1>
+        </div>
+    </div>
+        <!-- /.col-lg-12 -->
+    
+    <div class="row">
+        <div class="col-lg-6">
+            <form action="/upload_lares" method="POST" enctype="multipart/form-data">
+            
+                <div class="panel panel-default">
+                    <div class="panel-heading">Please select the file (example: "reporte_informe_planta_20210325033306.xls") </div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <input class="form-control" type="file" name="lares_file" id="lares_file" placeholder="reporte_informe_planta_20210325033306.xls">
+                        </div>
+
+                        <input type="submit" name="submit" value="Upload">
+                        
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        
+    </div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div id="map" style="display: none;"></div> 
+        </div>
+    </div>
+
+
+</div>
+<!-- /#page-wrapper -->
+
+<% INCLUDE incl/footer.tt %>
+
+<script type="text/javascript">
+
+
+    $(document).ready(function(){
+        var user_id = getCookie('user_id');
+        $("#user_id").html(user_id);
+
+        $('#dataTables-example').DataTable({
+            responsive: true
+        });
+        
+    })
+
+    function initMap() {
+        const uluru = { lat: -33.34, lng: -63.036 };
+        const map = new google.maps.Map(document.getElementById("map"), {
+          zoom: 4,
+          center: uluru,
+        });
+        <% map %>
+    }
+
+
+
+    document.getElementById("uploadfile").addEventListener("click", onUploadFile, false);
+    
+    var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = window.location.search.substring(1),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+            }
+        }
+    };
+
+    function onUploadFile()
+    {
+        // var lot     = getUrlParameter('lot');
+        var lot     = "<% formdata.LOT %>";
+        var twstart = document.getElementById("twstart").value;
+        var twend   = document.getElementById("twend").value;
+        var area    = document.getElementById("area").value;
+        var ton     = document.getElementById("ton").value;
+        var harvest_date = document.getElementById("harvest_date").value;
+        var picker  = $("#picker option:selected").text();
+
+        var dt_start = new Date(twstart);
+        var dt_end = new Date(twend);
+
+        if(dt_end < dt_start) {
+            alert('Harv.Dates :: End date must be after start date!');
+            return;
+        }
+
+        if (isNaN( area )) {
+            // It isn't a number
+            alert('Please check the value of the area provided. Not a valid number!');
+            return;
+        } 
+
+        if (isNaN( ton )) {
+            // It isn't a number
+            alert('Please check the value of the area provided. Not a valid number!');
+            return;
+        } 
+
+        var dataString = "lot=" + lot + "&twstart=" + twstart + "&twend=" + twend + "&area=" + area + "&ton=" + ton + "&picker=" + picker + "&harvest_date=" + harvest_date;
+        console.log(dataString);
+        
+        $.ajax(
+        {
+            type: "POST",
+            url: "/editfield_action",
+            data: dataString,
+            crossDomain: true,
+            cache: false,
+            beforeSend: function () { },
+            success: function (data) {
+
+                alert("Field successfully updated!");
+                window.location.href = "/fieldstoharvest";
+            },
+            error: function (jqXHR, exception) {
+                var msg = '';
+                if (jqXHR.status === 0) {
+                    msg = 'Not connected.\n Please check the network.';
+                } else if (jqXHR.status == 404) {
+                    msg = 'Page not found. [404]';
+                } else if (jqXHR.status == 500) {
+                    msg = 'Internal server error [500].';
+                } else if (exception === 'parsererror') {
+                    msg = 'Failed to parse answer (JSON).';
+                } else if (exception === 'timeout') {
+                    msg = 'Time limit exceeded.';
+                } else if (exception === 'abort') {
+                    msg = 'Aborted Ajax request.';
+                } else {
+                    msg = 'Unknown error.\n' + jqXHR.responseText;
+                }
+                alert(msg);
+            }
+        });
+        
+    }
+
+</script>
+
+<!-- End of file -->
+</body>
+</html>
