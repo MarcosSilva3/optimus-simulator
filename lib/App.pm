@@ -38,6 +38,9 @@ set 'show_errors'  => 1;
 set 'startup_info' => 1;
 set 'warnings'     => 1;
 
+# Local project folder: /home/evsro/perl-projects/optimus-simulator
+
+
 #
 # To build the image using Docker
 # docker build --tag hom-fr .
@@ -106,6 +109,21 @@ get '/dashboard' => sub {
     } else {
         redirect "/index";
     }
+};
+
+#-----------------------------------------------------------------------------#
+get '/dashboard_data' => sub {
+    my $hash;
+    my $query = 'select sum("totalPlots") as total_plots, count(distinct("plantingMachine")) as total_planters, count(distinct("droneMachine")) as total_drones, count(distinct("harvestMachine")) as total_combines from fieldsplanting';
+    my $sth = database->prepare($query);
+    $sth->execute;
+
+    my ($total_plots, $total_planters, $total_drones, $total_combines) = $sth->fetchrow;
+    $hash->{'total_plots'} = $total_plots;
+    $hash->{'total_planters'} = $total_planters;
+    $hash->{'total_drones'} = $total_drones;
+    $hash->{'total_combines'} = $total_combines;
+    return encode_json($hash);
 };
 
 #-----------------------------------------------------------------------------#

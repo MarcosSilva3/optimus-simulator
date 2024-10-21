@@ -46,10 +46,6 @@
 
     <script type="text/javascript">
 
-    $(document).ready(function(){
-        var plant = window.localStorage.getItem("plant");
-        document.getElementById("plant").innerHTML = plant;
-    })
     
 
     $('#solve').click(function() {
