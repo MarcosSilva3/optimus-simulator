@@ -114,11 +114,12 @@ get '/dashboard' => sub {
 #-----------------------------------------------------------------------------#
 get '/dashboard_data' => sub {
     my $hash;
-    my $query = 'select sum("totalPlots") as total_plots, count(distinct("plantingMachine")) as total_planters, count(distinct("droneMachine")) as total_drones, count(distinct("harvestMachine")) as total_combines from fieldsplanting';
+    my $query = 'select count(distinct("fieldId")) as total_fields, sum("totalPlots") as total_plots, count(distinct("plantingMachine")) as total_planters, count(distinct("droneMachine")) as total_drones, count(distinct("harvestMachine")) as total_combines from fieldsplanting';
     my $sth = database->prepare($query);
     $sth->execute;
 
-    my ($total_plots, $total_planters, $total_drones, $total_combines) = $sth->fetchrow;
+    my ($total_fields, $total_plots, $total_planters, $total_drones, $total_combines) = $sth->fetchrow;
+    $hash->{'total_fields'} = $total_fields;
     $hash->{'total_plots'} = $total_plots;
     $hash->{'total_planters'} = $total_planters;
     $hash->{'total_drones'} = $total_drones;
