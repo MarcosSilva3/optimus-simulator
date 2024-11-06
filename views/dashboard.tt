@@ -127,7 +127,7 @@
                 <div class="col-lg-6">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Plots per Planter
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Number of plots to be planted per machine
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
@@ -142,7 +142,7 @@
                 <div class="col-lg-6">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Expected area (ha) per week
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Number of fields to be planted per machine
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
@@ -161,7 +161,7 @@
                 <div class="col-lg-6">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Expected volume per week (Ton.RW) - Click in the bar to filter the fields
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Number of plots to be harvested per machine
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
@@ -176,7 +176,7 @@
                 <div class="col-lg-6">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Expected area (ha) per week
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Number of fields to be harvested per machine
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
