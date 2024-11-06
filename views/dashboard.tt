@@ -124,15 +124,14 @@
             </div>
 
             <div class="row">
-
                 <div class="col-lg-6">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Expected volume per week (Ton.RW) - Click in the bar to filter the fields
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Plots per Planter
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <div style="max-width: 100%; margin: auto" id="volume_per_week_interactive"></div>
+                            <div style="max-width: 100%; margin: auto" id="plant-plots"></div>
                         </div>
                         <!-- /.panel-body -->
                     </div>
@@ -147,7 +146,75 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div class="panel-body">
-                            <div style="max-width: 100%; margin: auto" id="area_per_week"></div>
+                            <div style="max-width: 100%; margin: auto" id="plant-fields"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-6 -->
+
+            </div>
+            <!-- /.row -->
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Expected volume per week (Ton.RW) - Click in the bar to filter the fields
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="harvest-plots"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-6 -->
+
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Expected area (ha) per week
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="harvest-fields"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-6 -->
+
+            </div>
+            <!-- /.row -->
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Planters
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="planters-table"></div>
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.panel -->
+                </div>
+                <!-- /.col-lg-6 -->
+
+                <div class="col-lg-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Combines
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div class="panel-body">
+                            <div style="max-width: 100%; margin: auto" id="harvesters-table"></div>
                         </div>
                         <!-- /.panel-body -->
                     </div>
@@ -243,14 +310,367 @@
         });
 
         ///////////////////////////////////////////////////////////////////////////
+
+        // generate plots to be shown in the dashboard
+        generatePlots();
         
     })
 
 
     
+    var distinctCalc = function(values, data, calcParams) {
+        //values - array of column values
+        //data - all table data
+        //calcParams - params passed from the column definition object
+
+        var calc = 0;
+        const map1 = new Map();
+
+        values.forEach(function(value){
+            map1.set(value, 1);
+        });
+
+        calc = map1.size;
+        return calc;
+    };
+
+    var table_planters = new Tabulator("#planters-table", {
+        ajaxURL: "/ajax-get-planters-summary",
+        selectable:1,
+        placeholder:"No Data Set",
+        // layout:"fitDataStretch",
+        columns: [
+            {title: "Planter ID", field: "plantingMachine", formatter:"rownum", bottomCalc:distinctCalc},
+            {title: "Total Fields", field: "total_fields", bottomCalc:"sum"},
+            {title: "Total Plots", field: "total_plots", bottomCalc:"sum"},
+            {title: "Total Distance", field: "total_distance", formatter:"money", bottomCalc:"sum"},
+        ]
+    });
+
+    var table_harvesters = new Tabulator("#harvesters-table", {
+        ajaxURL: "/ajax-get-harvesters-summary",
+        selectable:1,
+        placeholder:"No Data Set",
+        // layout:"fitDataStretch",
+        columns: [
+            {title: "Combine ID", field: "harvestMachine", formatter:"rownum", bottomCalc:distinctCalc},
+            {title: "Total Fields", field: "total_fields", bottomCalc:"sum"},
+            {title: "Total Plots", field: "total_plots", bottomCalc:"sum"},
+            {title: "Total Distance", field: "total_distance", formatter:"money", bottomCalc:"sum"},
+        ]
+    });
+
+    
+
+    //---------------------------------------------------------------------------------//
+    // Generate plot with the number of plots to be planted by machine and crop.       //
+    //---------------------------------------------------------------------------------//
+    function generatePlantingPlotPlots(data) {
+        let lx_corn = [];
+		let ly_corn = [];
+		let lx_soy = [];
+		let ly_soy = [];
+
+		for (let i = 0; i < data.length; i++) {
+            let machineId = data[i].plantingMachine;
+			let totalPlots = data[i].total_plots;
+			let cropName = data[i].cropName;
+
+			if (cropName == "Corn") {
+				lx_corn.push(machineId);
+				ly_corn.push(totalPlots);
+			} else {
+				lx_soy.push(machineId);
+				ly_soy.push(totalPlots);
+			}
+        }
+
+        var data_corn = {
+			x: lx_corn,
+			y: ly_corn,
+			name: 'Corn',
+			type: 'bar',
+			marker: {
+				color: '#89D329'
+			}
+		};
+
+		var data_soy = {
+			x: lx_soy,
+			y: ly_soy,
+			name: 'Soybeans',
+			type: 'bar',
+			marker: {
+				color: '#00BCFF'
+			}
+		};
+
+		var data = [data_corn, data_soy];
+
+		var layout = {
+			title: 'Plots to be planted per machine',
+			font: {
+				family: 'Raleway, sans-serif'
+			},
+			showlegend: true,
+			xaxis: {title: 'Machine ID'},
+			yaxis: {title: '# of plots'},
+			barmode: 'stack',
+			paper_bgcolor: "#FEF9E7"
+		};
+
+		Plotly.newPlot('plant-plots', data, layout);
+    }
+    
+    //---------------------------------------------------------------------------------//
+    //---------------------------------------------------------------------------------//
+    // Generate plot with the number of fields to be planted by machine and crop.      //
+    //---------------------------------------------------------------------------------//
+    function generatePlantingPlotFields(data) {
+        let lx_corn = [];
+		let ly_corn = [];
+		let lx_soy = [];
+		let ly_soy = [];
+
+		for (let i = 0; i < data.length; i++) {
+            let machineId = data[i].plantingMachine;
+			let totalFields = data[i].total_fields;
+			let cropName = data[i].cropName;
+
+			if (cropName == "Corn") {
+				lx_corn.push(machineId);
+				ly_corn.push(totalFields);
+			} else {
+				lx_soy.push(machineId);
+				ly_soy.push(totalFields);
+			}
+        }
+
+        var data_corn = {
+			x: lx_corn,
+			y: ly_corn,
+			name: 'Corn',
+			type: 'bar',
+			marker: {
+				color: '#89D329'
+			}
+		};
+
+		var data_soy = {
+			x: lx_soy,
+			y: ly_soy,
+			name: 'Soybeans',
+			type: 'bar',
+			marker: {
+				color: '#00BCFF'
+			}
+		};
+
+		var data = [data_corn, data_soy];
+
+		var layout = {
+			title: 'Fields to be planted per machine',
+			font: {
+				family: 'Raleway, sans-serif'
+			},
+			showlegend: true,
+			xaxis: {title: 'Machine ID'},
+			yaxis: {title: '# of fields'},
+			barmode: 'stack',
+			paper_bgcolor: "#FEF9E7"
+		};
+
+		Plotly.newPlot('plant-fields', data, layout);
+    }
+
+    //---------------------------------------------------------------------------------//
+    //---------------------------------------------------------------------------------//
+    // Pull all data needed to generate plots for planting operation.                  //
+    //---------------------------------------------------------------------------------//
+    function generatePlantingPlots() {
+
+        var request_dashboard_data = $.ajax({
+            type: "GET",
+            url: "/ajax-get-planters-summary-crop",
+            crossDomain: true,
+            cache: false,
+            beforeSend: function () { }
+        });
+
+        request_dashboard_data.done(function (data) {
+            data = JSON.parse(data);
+            generatePlantingPlotPlots(data);
+            generatePlantingPlotFields(data);
+        });
+
+        request_dashboard_data.fail(function (jqXHR, textStatus) {
+            alert("Failed to get data about fields: " + textStatus);
+        });
+    }
+    //---------------------------------------------------------------------------------//
+    //---------------------------------------------------------------------------------//
 
 
+    //---------------------------------------------------------------------------------//
+    // Generate plot with the number of plots to be planted by machine and crop.       //
+    //---------------------------------------------------------------------------------//
+    function generateHarvestPlotPlots(data) {
+        let lx_corn = [];
+		let ly_corn = [];
+		let lx_soy = [];
+		let ly_soy = [];
+
+		for (let i = 0; i < data.length; i++) {
+            let machineId = data[i].harvestMachine;
+			let totalPlots = data[i].total_plots;
+			let cropName = data[i].cropName;
+
+			if (cropName == "Corn") {
+				lx_corn.push(machineId);
+				ly_corn.push(totalPlots);
+			} else {
+				lx_soy.push(machineId);
+				ly_soy.push(totalPlots);
+			}
+        }
+
+        var data_corn = {
+			x: lx_corn,
+			y: ly_corn,
+			name: 'Corn',
+			type: 'bar',
+			marker: {
+				color: '#89D329'
+			}
+		};
+
+		var data_soy = {
+			x: lx_soy,
+			y: ly_soy,
+			name: 'Soybeans',
+			type: 'bar',
+			marker: {
+				color: '#00BCFF'
+			}
+		};
+
+		var data = [data_corn, data_soy];
+
+		var layout = {
+			title: 'Plots to be harvested per machine',
+			font: {
+				family: 'Raleway, sans-serif'
+			},
+			showlegend: true,
+			xaxis: {title: 'Machine ID'},
+			yaxis: {title: '# of plots'},
+			barmode: 'stack',
+			paper_bgcolor: "#FEF9E7"
+		};
+
+		Plotly.newPlot('harvest-plots', data, layout);
+    }
+
+    //---------------------------------------------------------------------------------//
+    //---------------------------------------------------------------------------------//
+    // Generate plot with the number of fields to be planted by machine and crop.      //
+    //---------------------------------------------------------------------------------//
+    function generateHarvestPlotFields(data) {
+        let lx_corn = [];
+		let ly_corn = [];
+		let lx_soy = [];
+		let ly_soy = [];
+
+		for (let i = 0; i < data.length; i++) {
+            let machineId = data[i].harvestMachine;
+			let totalFields = data[i].total_fields;
+			let cropName = data[i].cropName;
+
+			if (cropName == "Corn") {
+				lx_corn.push(machineId);
+				ly_corn.push(totalFields);
+			} else {
+				lx_soy.push(machineId);
+				ly_soy.push(totalFields);
+			}
+        }
+
+        var data_corn = {
+			x: lx_corn,
+			y: ly_corn,
+			name: 'Corn',
+			type: 'bar',
+			marker: {
+				color: '#89D329'
+			}
+		};
+
+		var data_soy = {
+			x: lx_soy,
+			y: ly_soy,
+			name: 'Soybeans',
+			type: 'bar',
+			marker: {
+				color: '#00BCFF'
+			}
+		};
+
+		var data = [data_corn, data_soy];
+
+		var layout = {
+			title: 'Fields to be harvested per machine',
+			font: {
+				family: 'Raleway, sans-serif'
+			},
+			showlegend: true,
+			xaxis: {title: 'Machine ID'},
+			yaxis: {title: '# of fields '},
+			barmode: 'stack',
+			paper_bgcolor: "#FEF9E7"
+		};
+
+		Plotly.newPlot('harvest-fields', data, layout);
+    }
+
+    //---------------------------------------------------------------------------------//
+    //---------------------------------------------------------------------------------//
+    // Pull all data needed to generate plots for harvest operation.                   //
+    //---------------------------------------------------------------------------------//
+    function generateHarvestPlots() {
+
+        var request_dashboard_data = $.ajax({
+            type: "GET",
+            url: "/ajax-get-harvesters-summary-crop",
+            crossDomain: true,
+            cache: false,
+            beforeSend: function () { }
+        });
+
+        request_dashboard_data.done(function (data) {
+            data = JSON.parse(data);
+            generateHarvestPlotPlots(data);
+            generateHarvestPlotFields(data);
+        });
+
+        request_dashboard_data.fail(function (jqXHR, textStatus) {
+            alert("Failed to get data about fields: " + textStatus);
+        });
+    }
+
+    //---------------------------------------------------------------------------------//
+    // Generate plots for planting and harvest operation                               //
+    //---------------------------------------------------------------------------------//
+    function generatePlots() {
+        generatePlantingPlots();
+        generateHarvestPlots();
+    }
+    //---------------------------------------------------------------------------------//
+    //---------------------------------------------------------------------------------//
+
+    
 </script>
+
+
 <!-- End of file -->
 </body>
 </html>

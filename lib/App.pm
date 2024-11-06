@@ -128,6 +128,90 @@ get '/dashboard_data' => sub {
 };
 
 #-----------------------------------------------------------------------------#
+# AJAX routes                                                                 #
+#-----------------------------------------------------------------------------#
+get '/ajax-get-planters-summary' => sub {
+    my $hash;
+    my $query = 'select distinct "plantingMachine", count(distinct("fieldName")) as total_fields,
+                sum("totalPlots") as total_plots, sum("plantingDistKm") as total_distance
+                from fieldsplanting group by "plantingMachine" order by "plantingMachine"';
+    my $sth = database->prepare($query);
+    $sth->execute;
+
+    my @data = ();
+    while(my $hash = $sth->fetchrow_hashref)
+    {
+        push @data, $hash;
+    }
+    return encode_json(\@data);
+};
+
+#-----------------------------------------------------------------------------#
+get '/ajax-get-planters-summary-crop' => sub {
+    my $hash;
+    my $query = 'select distinct "plantingMachine", "cropName", count(distinct("fieldName")) as total_fields,
+                sum("totalPlots") as total_plots, sum("plantingDistKm") as total_distance
+                from fieldsplanting group by "plantingMachine","cropName" order by "plantingMachine", "cropName"';
+    my $sth = database->prepare($query);
+    $sth->execute;
+
+    my @data = ();
+    while(my $hash = $sth->fetchrow_hashref)
+    {
+        push @data, $hash;
+    }
+    return encode_json(\@data);
+};
+
+#-----------------------------------------------------------------------------#
+get '/ajax-get-harvesters-summary' => sub {
+    my $hash;
+    my $query = 'select distinct "harvestMachine", count(distinct("fieldName")) as total_fields,
+                sum("totalPlots") as total_plots, sum("harvestDistKm") as total_distance
+                from fieldsplanting group by "harvestMachine" order by "harvestMachine"';
+    my $sth = database->prepare($query);
+    $sth->execute;
+
+    my @data = ();
+    while(my $hash = $sth->fetchrow_hashref)
+    {
+        push @data, $hash;
+    }
+
+    return encode_json(\@data);
+};
+
+#-----------------------------------------------------------------------------#
+get '/ajax-get-harvesters-summary-crop' => sub {
+    my $hash;
+    my $query = 'select distinct "harvestMachine", "cropName", count(distinct("fieldName")) as total_fields,
+                sum("totalPlots") as total_plots, sum("harvestDistKm") as total_distance
+                from fieldsplanting group by "harvestMachine", "cropName" order by "harvestMachine", "cropName"';
+    my $sth = database->prepare($query);
+    $sth->execute;
+
+    my @data = ();
+    while(my $hash = $sth->fetchrow_hashref)
+    {
+        push @data, $hash;
+    }
+    return encode_json(\@data);
+};
+
+
+
+
+
+
+
+
+
+
+
+
+#-----------------------------------------------------------------------------#
+# Subroutines and Functions                                                   #
+#-----------------------------------------------------------------------------#
 sub getPickerGroups
 {
     my @pickers = ();
